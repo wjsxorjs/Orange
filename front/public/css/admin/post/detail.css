@@ -1,0 +1,80 @@
+
+.detailInfoTable .td{
+    font-size: 14px !important;
+    text-align: center;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+}
+
+.detailInfoTable .td img{
+    width: 50px;
+    cursor: pointer;
+}
+
+.detailInfoTable .td.postimg{
+    white-space: nowrap;
+}
+
+.detailInfoTable .td.postimg img{
+    width: 150px;
+    height: 150px;
+    border: 2px ridge #bebebe;
+    cursor: pointer;
+    margin: 2px 5px;
+}
+
+.detailInfoTable .th{
+    font-size: 14px !important;
+    text-align: center;
+    background-color: #f0f0f0;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+}
+
+.TableTitle {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.ModalInner{
+    width: 80% ;
+    margin: 0 auto;
+}
+
+.BoxStyle::-webkit-scrollbar-track {
+    padding: 2px 0;
+    border-radius: 10px;
+    height: 80%;
+}
+
+.BoxStyle::-webkit-scrollbar {
+    width: 10px;
+}
+
+.BoxStyle::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #fefefe;
+    border: 1px solid #494949;
+}
+
+
+
+
+.postimgRow::-webkit-scrollbar-track {
+    padding: 2px 0;
+    background-color: #efefef;
+}
+
+.postimgRow::-webkit-scrollbar {
+    width: 5px;
+}
+
+.postimgRow::-webkit-scrollbar-thumb {
+    border-radius: 15px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #efefef;
+    border: 1px solid #efefef;
+}

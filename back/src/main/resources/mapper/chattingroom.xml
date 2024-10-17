@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.ChattingRoomMapper">
+    <select id="chatAll" parameterType="String" resultType="com.sist.back.vo.ChatRoomVO">
+      SELECT * FROM chatroom WHERE buyer_userkey = #{userkey} or seller_userkey = #{userkey}
+    </select>
+
+    <insert id="createRoom" parameterType="com.sist.back.vo.ChatRoomVO" useGeneratedKeys="true" keyProperty="chatroomkey">
+      INSERT INTO chatroom(postkey, buyer_userkey, seller_userkey, isalarm, istop, isoffer, create_dtm) VALUES (#{postkey}, #{buyer_userkey}, #{seller_userkey}, 1, 0, 0, now())
+    </insert>
+
+    <select id="searchPostkey" parameterType="String">
+      SELECT postkey FROM chatroom WHERE chatroomkey = #{chatroomkey}
+    </select>
+
+    <select id="checkRoom" parameterType="com.sist.back.vo.ChatRoomVO">
+      SELECT * FROM chatroom WHERE postkey = #{postkey} AND buyer_userkey = #{buyer_userkey}
+    </select>
+
+</mapper>

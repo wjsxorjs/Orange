@@ -1,0 +1,368 @@
+@charset "UTF-8";
+
+#wrap.beta .headingArea.gSubmain {
+    width: 100%;
+}
+
+#wrap .headingArea.gSubmain {
+    position: relative;
+    padding: 0;
+    margin: 0 0 16px;
+}
+
+#wrap .headingArea.gSubmain .mTitle {
+    position: relative;
+    margin: 0;
+}
+
+#wrap .headingArea.gSubmain .mBreadcrumb {
+    position: absolute;
+    left: 0px;
+    top: 16px;
+}
+
+#wrap.beta .mBreadcrumb {
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+}
+
+#wrap .headingArea.gSubmain .mBreadcrumb ol {
+    float: left;
+}
+
+#wrap.beta .dashMain {
+    margin-left: 0;
+}
+
+.dashMain {
+    width: 100%;
+    margin: 30px 0 0 -12px;
+}
+
+.mDashPannel {
+    margin: 0 0 45px;
+}
+
+.mDashPannel .header {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    padding: 0 8px 0 0;
+    border: 1px solid #7a9fd1;
+    color: #fff;
+    box-sizing: border-box;
+    background: #87afe3;
+}
+
+.mDashPannel .header > .title {
+    flex: 1;
+    float: left;
+    padding: 10px 10px 8px;
+}
+
+.mDashPannel .header a.more {
+    display: flex;
+    align-items: center;
+    margin-right: -8px;
+    padding-right: 8px;
+}
+
+.mDashPannel .header .more {
+    align-self: stretch;
+    position: relative;
+    float: right;
+    padding: 10px 0 8px 8px;
+    font-size: 11px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+.mTooltip {
+    position: relative;
+    display: inline-block;
+    margin: -2px 0 0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.mTooltip.gSmall .tooltip {
+    width: 258px;
+}
+
+.mTooltip .tooltip {
+    display: none;
+    position: absolute;
+    left: -13px;
+    top: 30px;
+    text-align: left;
+    font-weight: normal;
+    border: 1px solid #d6dae1;
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+.mDashPannel .right {
+    text-align: right;
+}
+
+.user-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%; /* 동그란 모양으로 만들기 */
+    border: 1px solid #cdcdcd; /* 테두리 추가 */
+}
+
+.mBoard.typeProduct table {
+    width: 100%; /* 테이블이 전체 너비를 차지하도록 설정 */
+    border-collapse: collapse; /* 테두리 겹침 방지 */
+}
+
+.mBoard.typeProduct th,
+.mBoard.typeProduct td {
+    padding: 10px; /* 셀 간의 여백 */
+    border-bottom: 1px solid #cdcdcd; /* 셀 하단에 테두리 추가 */
+    vertical-align: middle; /* 내용물이 셀의 가운데에 위치하도록 설정 */
+}
+
+.mBoard.typeProduct th {
+    width: 150px; /* 항목명 셀의 고정 너비 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    background-color: #e4e7f1; /* 배경색 추가 */
+    color: #354c84; /* 텍스트 색상 */
+}
+
+.mBoard.typeProduct td {
+    text-align: left; /* 내용 텍스트 왼쪽 정렬 */
+    width: auto; /* 내용 셀의 자동 너비 */
+}
+
+.mDashPannel tbody tr td:first-child {
+    border-left: 1px solid #d9dadc;
+}
+
+html:lang(ko) .mDashPannel td {
+    font-size: 13px;
+}
+
+.mDashPannel .center td,
+.mDashPannel .right td,
+.mDashPannel td.center {
+    padding: 13px 10px;
+}
+
+.mDashPannel td {
+    border-right: 1px solid #d9dadc;
+    border-bottom: 1px solid #d9dadc;
+    font-size: 12px;
+    color: #1c1c1c;
+    background: #fff;
+}
+
+.mNoticeEc th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    word-wrap: break-word;
+}
+
+html:lang(ko) body,
+html:lang(ko) code {
+    font-size: 13px;
+    letter-spacing: -0.5px;
+}
+
+body, code {
+    font-size: 12px;
+    font-family: "Noto Sans KR", "맑은 고딕", "malgun gothic", "Apple SD Gothic Neo", sans-serif;
+    color: #1b1e26;
+    background-color: #f4f5f8;
+}
+
+#content {
+    height: 100%;
+    min-height: 750px;
+    min-width: 960px;
+    width: 100%;
+    padding: 24px 24px 100px;
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+#container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 56px 0 0 256px;
+    box-sizing: border-box;
+    background-color: #f4f5f8;
+    transition: padding 0.3s;
+}
+
+.section {
+    margin: 0 0 24px;
+}
+
+.mOption.gDivision {
+    display: none;
+    margin: -1px 0 0;
+}
+
+/* 사용자 정보 영역 */
+#wrap {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+  
+#content {
+    margin: 0 auto;
+    padding-left: 20px;
+}
+
+.mBoard {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.mBoard table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.mBoard th, .mBoard td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+}
+
+.mBoard th {
+    background-color: #f5f5f5;
+    text-align: left;
+}
+
+.mBoard td {
+    background-color: #fff;
+    text-align: center;
+}
+
+.mBoard img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 버튼 영역 */
+.mButton {
+    text-align: center;
+}
+
+.mButton a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.mButton a.btnEm {
+    background-color: #007bff;
+    cursor: pointer;
+}
+
+/* 게시글 정보 테이블 */
+.mBoard.typeProduct table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.mBoard.typeProduct th, .mBoard.typeProduct td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    
+}
+
+.mBoard.typeProduct th {
+    background-color: #f0f0f0;
+}
+
+.mBoard.typeProduct td {
+    background-color: #fff;
+}
+
+.mBoard.typeProduct tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+}
+
+.mBoard.typeProduct caption {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.mToggleBar h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.mToggleBar {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 모달 내부 */
+.modal-container {
+    width: 80%;
+    max-height: 80vh;
+    margin: auto;
+    overflow-y: auto;
+}
+
+.modal-container table {
+    width: 100%;
+}
+
+.modal-container th, .modal-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.modal-container th {
+    background-color: #f5f5f5;
+}
+
+.modal-container td {
+    background-color: #fff;
+}
+
+/* 모달 내부 버튼 */
+.modal-container .mButton {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin-top: 20px;
+}
+
+.modal-container .mButton a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff; /* 파란색 계열 */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-left: 10px; /* 버튼 간 간격 */
+    transition: background-color 0.3s ease;
+}
+
+

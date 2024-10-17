@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.DealreviewMapper">
+  <!-- 전체 후기의 개수를 반환 -->
+  <select id="allCount" resultType="int" parameterType="String">
+    SELECT 
+        (SELECT COUNT(dealuserreview) FROM post WHERE userkey = #{userkey} AND onbuyerreview = 1) +
+        (SELECT COUNT(userreview) FROM post WHERE dealuserkey = #{userkey} AND onsellerreview = 1) 
+  </select>
+
+  <!-- 구매자 후기의 개수를 반환 -->
+  <select id="buyingCount" resultType="int" parameterType="String">
+      SELECT COUNT(dealuserreview) FROM post
+      WHERE userkey = #{userkey} AND onbuyerreview = 1
+  </select>
+
+  <!-- 판매자 후기의 개수를 반환 -->
+  <select id="sellingCount" resultType="int" parameterType="String">
+      SELECT COUNT(userreview) FROM post
+      WHERE dealuserkey = #{userkey} AND onsellerreview = 1
+  </select>
+
+  <!-- 받은 거래 후기 -->
+  <select id="allReview" parameterType="map" resultType="com.sist.back.vo.PostVO">
+    SELECT * 
+    FROM (
+        SELECT @RN:=@RN+1 AS rnum, result.* 
+        FROM (
+            SELECT p.postkey, p.dealuserreview, u.nickname, u.imgurl, t.region1, t.region2, t.region3, '구매자' AS reviewType
+            FROM post p
+            JOIN user u ON p.dealuserkey = u.userkey
+            JOIN address a ON u.userkey = a.userkey
+            JOIN town t ON a.townkey = t.townkey
+            WHERE p.userkey = #{userkey} AND p.onbuyerreview = 1
+            ORDER BY p.postkey DESC
+        ) result, (SELECT @RN:=0) r
+        UNION ALL
+        SELECT @RN:=@RN+1 AS rnum, a.*
+        FROM (
+            SELECT p.postkey, p.userreview, u.nickname, u.imgurl, t.region1, t.region2, t.region3, '판매자' AS reviewType
+            FROM post p
+            JOIN user u ON p.userkey = u.userkey
+            JOIN address a ON u.userkey = a.userkey
+            JOIN town t ON a.townkey = t.townkey
+            WHERE p.dealuserkey = #{userkey} AND p.onsellerreview = 1
+            ORDER BY p.userreview DESC
+        ) a, (SELECT @RN:=0) r
+    ) c
+    WHERE c.rnum BETWEEN #{begin} AND #{end}
+  </select>
+
+  <!-- 받은 구매자 거래 후기 -->
+  <select id="buyingReview" parameterType="map" resultType="com.sist.back.vo.PostVO">
+    SELECT * 
+    FROM (
+        SELECT @RN:=@RN+1 AS rnum, result.*
+        FROM (
+            SELECT p.postkey, p.dealuserreview, u.nickname, u.imgurl, t.region1, t.region2, t.region3, '구매자' AS reviewType
+            FROM post p
+            JOIN user u ON p.dealuserkey = u.userkey
+            JOIN address a ON u.userkey = a.userkey
+            JOIN town t ON a.townkey = t.townkey
+            WHERE p.userkey = #{userkey} AND p.onbuyerreview = 1
+            ORDER BY p.postkey DESC
+        ) result, (SELECT @RN:=0) r
+    ) c
+    WHERE c.rnum BETWEEN #{b_begin} AND #{b_end}
+  </select>
+
+  <!-- 받은 판매자 거래 후기 -->
+  <select id="sellingReview" parameterType="map" resultType="com.sist.back.vo.PostVO">
+    SELECT * 
+    FROM (
+        SELECT @RN:=@RN+1 AS rnum, a.*
+        FROM (
+            SELECT p.postkey, p.userreview, u.nickname, u.imgurl, t.region1, t.region2, t.region3, '판매자' AS reviewType
+            FROM post p
+            JOIN user u ON p.userkey = u.userkey
+            JOIN address a ON u.userkey = a.userkey
+            JOIN town t ON a.townkey = t.townkey
+            WHERE p.dealuserkey = #{userkey} AND p.onsellerreview = 1
+            ORDER BY p.userreview DESC
+        ) a, (SELECT @RN:=0) r
+    ) c
+    WHERE c.rnum BETWEEN #{s_begin} AND #{s_end}
+  </select>
+
+  <select id="reviewList" parameterType="String" resultType="com.sist.back.vo.ReviewListVO">
+    SELECT * FROM reviewlist
+    WHERE preference = #{preference}
+  </select>
+
+  <update id="sellerReview" parameterType="map">
+    UPDATE post
+      SET userreview = (
+      SELECT review
+      FROM reviewlist
+      WHERE reviewlistkey = #{reviewlistkey}
+    ),
+    userreview_dtm = NOW(),
+    onsellerreview = 1
+    WHERE postkey = #{postkey}
+  </update>
+
+  <update id="buyerReview" parameterType="map">
+    UPDATE post
+      SET dealuserreview = (
+      SELECT review
+      FROM reviewlist
+      WHERE reviewlistkey = #{reviewlistkey}
+    ),
+    dealuserreview_dtm = NOW(),
+    onbuyerreview = 1
+    WHERE postkey = #{postkey}
+  </update>
+
+  <insert id="addManner" parameterType="map">
+    INSERT INTO manner(userkey, reviewlistkey, estimateuserkey, chatordeal, create_dtm, isdeleted, ismanner)
+    VALUES (#{userkey}, #{reviewlistkey}, #{estimateuserkey}, 0, NOW(), 0,
+      (SELECT 
+        CASE 
+          WHEN preference IN (1, 2) THEN 1
+          WHEN preference IN (4, 5) THEN 1
+          WHEN preference = 0 THEN 0
+          WHEN preference = 3 THEN 0
+        END
+      FROM reviewlist
+      WHERE reviewlistkey = #{reviewlistkey}
+      )
+    )
+  </insert>
+
+  <!-- 거래 후기 숨기기 -->
+  <update id="hideReview" parameterType="map">
+    UPDATE post
+    <set>
+      onsellerreview = CASE WHEN dealuserkey = #{userkey} THEN 0 ELSE onsellerreview END,
+      onbuyerreview = CASE WHEN dealuserkey != #{userkey} THEN 0 ELSE onbuyerreview END
+    </set>
+    WHERE postkey = #{postkey}
+  </update>
+</mapper>

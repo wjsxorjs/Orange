@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.WishlistMapper">
+    
+    <select id="isLike" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `wishlist`
+        WHERE userkey=#{userkey}
+        AND postkey=#{postkey}
+    </select>
+
+    <insert id="addLike" parameterType="Map">
+      INSERT
+      INTO `wishlist`(postkey,userkey,create_dtm)
+      VALUES (#{postkey},#{userkey},NOW())
+    </insert>
+    
+    <delete id="delLike" parameterType="Map">
+      DELETE 
+      FROM `wishlist`
+      WHERE wishlistkey = (
+            SELECT *
+            FROM (SELECT w.wishlistkey
+						      FROM wishlist w
+                  WHERE w.postkey=#{postkey} AND w.userkey=#{userkey}) as ww
+                  )
+    </delete>
+
+</mapper>

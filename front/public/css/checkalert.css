@@ -1,0 +1,24 @@
+.checkAlert .MuiPaper-root{
+    min-width: 565px;
+    border-radius: 25px;
+    padding: 10px;
+}
+
+.checkAlert .title{
+    font-size: 20px;
+    font-weight: bold;
+    
+}
+.checkAlert .content{
+    font-size: 15px;
+    
+}
+.checkAlert .btn{
+    font-size: 17px;
+}
+.checkAlert .btn.agreee{
+    background-color: #008800;
+}
+.checkAlert .btn.disagree{
+    background-color: #ff4f00;
+}

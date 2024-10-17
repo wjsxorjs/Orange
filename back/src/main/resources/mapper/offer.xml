@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.OfferMapper">
+    <!-- 가격제안 추가 -->
+    <insert id="makePriceOffer" parameterType="com.sist.back.vo.OfferVO">
+        INSERT
+        INTO `offer`(postkey,offeruserkey,price,offerstatus,create_dtm,update_dtm,isdeleted)
+        VALUES(#{postkey},#{offeruserkey},#{price},0,NOW(),NOW(),0)
+    </insert>
+</mapper>

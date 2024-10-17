@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.AdminMapper">
+    <select id="getTotal" resultType="com.sist.back.vo.admin.TotalVO">
+   SELECT 
+    COUNT(*) AS cntPost, 
+    (SELECT COUNT(*) FROM `user` WHERE isdeleted = 0) AS cntUser,
+    (SELECT COUNT(*) FROM `board` WHERE isdeleted = 0) AS cntBbs,
+    (SELECT COUNT(*) FROM `qna` WHERE isdeleted = 0 AND isanswered = 0) AS cntQna,
+    COUNT(CASE WHEN date_format(create_dtm, '%Y') = date_format(now(), '%Y') THEN 1 END) As cntPostYear,
+    (SELECT COUNT(*) FROM `user` WHERE date_format(create_dtm, '%Y') = date_format(now(), '%Y') AND isdeleted = 0) As cntUserYear,
+    (SELECT COUNT(*) FROM `board` WHERE date_format(create_dtm, '%Y') = date_format(now(), '%Y') AND isdeleted = 0) As cntBbsYear,
+      (SELECT COUNT(*) FROM `qna` WHERE date_format(create_dtm, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d') AND isanswered = 0 AND isdeleted = 0) As cntQnaDay
+  FROM post
+  where isdeleted = 0
+    </select>
+
+    <select id="postOverview" resultType="com.sist.back.vo.admin.PostOverviewVO" parameterType="String">
+    SELECT date_format(create_dtm, '%y년 %m월') as yearandmonth, COUNT(*) cnt, COUNT(CASE WHEN poststatus = 3 THEN 1 END) as dealcnt FROM post
+      WHERE isdeleted = 0 AND create_dtm is not null 
+      <if test="year != null and year != ''">
+      AND DATE_FORMAT(create_dtm, '%Y') = #{year}
+      </if>
+      GROUP BY date_format(create_dtm, '%y년 %m월')
+      ORDER BY date_format(create_dtm, '%y년 %m월') 
+    </select>
+
+    <select id="searchYear" resultType="String">
+    SELECT date_format(create_dtm, '%Y년') as searchyear FROM post
+      WHERE isdeleted = 0 AND create_dtm is not null
+      GROUP BY date_format(create_dtm, '%Y년')
+      ORDER BY date_format(create_dtm, '%Y년') DESC
+    </select>
+
+    <select id="postStatusCnt" resultType="String">
+    SELECT COUNT(*) cnt
+      FROM post
+    WHERE isdeleted = 0 
+    GROUP BY poststatus
+    ORDER BY poststatus
+    </select>
+    
+    <select id="userStatusCnt" resultType="com.sist.back.vo.admin.UserStatusCntVO">
+    SELECT 
+        DATE_FORMAT(create_dtm, '%y년 %m월') AS `date`, 
+        COUNT(*) AS `newCnt`, 
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS `delCnt`
+    FROM `user`
+    WHERE create_dtm IS NOT NULL
+      AND create_dtm  <![CDATA[>=]]> DATE_SUB(NOW(), INTERVAL 12 MONTH)
+    GROUP BY DATE_FORMAT(create_dtm, '%y년 %m월')
+    ORDER BY DATE_FORMAT(create_dtm, '%y년 %m월');
+    </select>
+    
+    <select id="getQnaList" resultType="com.sist.back.vo.QnaVO">
+   SELECT * 
+      FROM `qna`
+    WHERE isanswered = 0
+      AND isdeleted = 0
+    ORDER BY create_dtm desc
+    limit 6
+    </select>
+    
+    <select id="getUserRank" resultType="com.sist.back.vo.admin.UserRankVO">
+   SELECT p.userkey, u.nickname, u.email, u.imgurl, COUNT(*) as cellqty, u.mannertemp, SUM(p.lastprice) as cellprice
+      FROM `user` u
+      JOIN `post` p ON p.userkey = u.userkey
+    WHERE p.poststatus = 3 and p.isdeleted = 0 and u.isdeleted = 0
+    GROUP BY p.userkey
+    ORDER BY cellqty desc
+    limit 4
+    </select>
+
+    <select id="todayReport" resultType="com.sist.back.vo.admin.TodayReportVO">
+    SELECT COUNT(CASE WHEN p.poststatus = 3 AND date(p.deal_dtm) = date(now()) THEN 1 END) AS dealcnt, 
+       IFNULL(SUM(IFNULL(p.lastprice, 0)), 0) AS dealSum,
+       COUNT(CASE WHEN date(p.create_dtm) = date(now()) THEN 1 END) AS newPost,
+       (
+        SELECT COUNT(*) 
+          FROM `user` u
+        WHERE u.isdeleted = 0
+          AND DATE(u.create_dtm) = DATE(now())
+        ) AS newUser,
+            (
+        SELECT COUNT(*) 
+          FROM `chatroom` c
+        WHERE c.isdeleted = 0
+          AND DATE(c.create_dtm) = DATE(now())
+        ) AS newChat
+    FROM post p
+    WHERE p.isdeleted = 0
+    </select>
+    
+    <select id="dealstatistic" resultType="com.sist.back.vo.admin.DealStatisticVO">
+      SELECT 
+      ROUND(AVG(CASE WHEN DATE(p.deal_dtm) BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW() THEN 1 END), 0) AS dayavg,
+      COUNT(CASE WHEN DATE(p.deal_dtm) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) THEN 1 END) AS yesterday,
+      COUNT(CASE WHEN DATE(p.deal_dtm) = CURDATE() THEN 1 END) AS today,
+      ROUND(AVG(CASE WHEN WEEK(p.deal_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 4 WEEK), 1) AND WEEK(NOW(), 1) THEN 1 END), 0) AS weekavg,
+      COUNT(CASE WHEN WEEK(p.deal_dtm, 1) = WEEK(NOW(), 1) - 1 THEN 1 END) AS lastweek,
+      COUNT(CASE WHEN WEEK(p.deal_dtm, 1) = WEEK(NOW(), 1) THEN 1 END) AS thisweek,
+      ROUND(AVG(CASE WHEN MONTH(p.deal_dtm) BETWEEN MONTH(DATE_SUB(NOW(), INTERVAL 3 MONTH)) AND MONTH(NOW()) THEN 1 END), 0) AS monthavg,
+      COUNT(CASE WHEN MONTH(p.deal_dtm) = MONTH(NOW()) - 1 THEN 1 END) AS lastmonth,
+      COUNT(CASE WHEN MONTH(p.deal_dtm) = MONTH(NOW()) THEN 1 END) AS thismonth
+      FROM post p
+      WHERE p.isdeleted = 0 AND p.poststatus = 3
+    </select>
+    
+    <select id="catedealstatistic" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+      SELECT 
+          c.*,
+          COUNT(*) AS dealcnt,
+          SUM(p.lastprice) AS dealprice
+      FROM post p
+      LEFT JOIN category c ON p.categorykey = c.categorykey
+      WHERE p.isdeleted = 0 
+        AND p.poststatus = 3 
+        AND c.isdeleted = 0
+        <if test="type == null or type == 1">
+        AND DATE(p.deal_dtm) = DATE(NOW())
+        </if>
+        <if test="type == 2">
+        AND WEEK(p.deal_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1)
+        </if>
+        <if test="type == 3">
+        AND p.deal_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()
+        </if>
+      GROUP BY p.categorykey
+      ORDER BY dealcnt DESC, dealprice DESC
+      LIMIT 5
+    </select>
+
+    <select id="dealchart" parameterType="String" resultType="com.sist.back.vo.admin.DealchartVO">
+    SELECT 
+      <if test="type == 1">
+        DATE_FORMAT(x.dtm, '%m-%d') AS dtm, 
+      </if>
+      <if test="type == 2">
+        x.dtm, 
+      </if>
+      <if test="type == 3">
+        x.dtm, 
+      </if>
+      x.cnt, 
+      x.price 
+      FROM (        
+        SELECT 
+          <if test="type == 1">
+            DATE(p.deal_dtm) AS dtm, 
+          </if>
+          <if test="type == 2">
+            CONCAT(
+                DATE_FORMAT(MIN(DATE_ADD(p.deal_dtm, INTERVAL(1 - DAYOFWEEK(p.deal_dtm)) DAY)), '%y-%m-%d'), 
+                ' ~ ', 
+                DATE_FORMAT(MAX(DATE_ADD(p.deal_dtm, INTERVAL(7 - DAYOFWEEK(p.deal_dtm)) DAY)), '%y-%m-%d')
+            ) AS dtm, 
+          </if>
+          <if test="type == 3">
+            DATE_FORMAT(p.deal_dtm, '%Y-%m') AS dtm,
+          </if>
+          COUNT(*) AS cnt, 
+          SUM(IFNULL(p.lastprice, 0)) AS price
+          FROM post p
+        WHERE p.isdeleted = 0
+          AND p.poststatus = 3
+          AND p.deal_dtm IS NOT NULL
+          AND p.deal_dtm <![CDATA[>=]]> #{start_dtm}
+          AND p.deal_dtm <![CDATA[<=]]> #{end_dtm}
+        GROUP BY 
+        <if test="type != 2">
+          dtm
+        </if>
+        <if test="type == 2">
+          YEAR(p.deal_dtm), WEEK(p.deal_dtm, 1)
+        </if>
+        ORDER BY dtm
+      ) x
+    </select>
+
+    <select id="analpostcatepie" parameterType="String" resultType="com.sist.back.vo.admin.AnalpostcatepieVO">
+    SELECT c.img_url, c.categoryname, COUNT(*) AS cnt, SUM(IFNULL(p.lastprice, 0)) AS price
+      FROM post p
+      JOIN category c ON c.categorykey = p.categorykey
+    WHERE p.isdeleted = 0
+      AND p.poststatus = 3
+      AND p.deal_dtm IS NOT NULL
+      AND p.deal_dtm <![CDATA[>=]]> #{start_dtm}
+      AND p.deal_dtm <![CDATA[<=]]> #{end_dtm}
+    GROUP BY c.categorykey
+    </select>
+
+    <select id="analuserbytime" parameterType="String" resultType="com.sist.back.vo.admin.AnaluserbydayVO">
+    SELECT 
+      HOUR(time_table.hour) AS signup_day,
+      CASE
+        WHEN HOUR(time_table.hour) = 0 THEN '00:00 ~ 01:00'
+        WHEN HOUR(time_table.hour) = 1 THEN '01:00 ~ 02:00'
+        WHEN HOUR(time_table.hour) = 2 THEN '02:00 ~ 03:00'
+        WHEN HOUR(time_table.hour) = 3 THEN '03:00 ~ 04:00'
+        WHEN HOUR(time_table.hour) = 4 THEN '04:00 ~ 05:00'
+        WHEN HOUR(time_table.hour) = 5 THEN '05:00 ~ 06:00'
+        WHEN HOUR(time_table.hour) = 6 THEN '06:00 ~ 07:00'
+        WHEN HOUR(time_table.hour) = 7 THEN '07:00 ~ 08:00'
+        WHEN HOUR(time_table.hour) = 8 THEN '08:00 ~ 09:00'
+        WHEN HOUR(time_table.hour) = 9 THEN '09:00 ~ 10:00'
+        WHEN HOUR(time_table.hour) = 10 THEN '10:00 ~ 11:00'
+        WHEN HOUR(time_table.hour) = 11 THEN '11:00 ~ 12:00'
+        WHEN HOUR(time_table.hour) = 12 THEN '12:00 ~ 13:00'
+        WHEN HOUR(time_table.hour) = 13 THEN '13:00 ~ 14:00'
+        WHEN HOUR(time_table.hour) = 14 THEN '14:00 ~ 15:00'
+        WHEN HOUR(time_table.hour) = 15 THEN '15:00 ~ 16:00'
+        WHEN HOUR(time_table.hour) = 16 THEN '16:00 ~ 17:00'
+        WHEN HOUR(time_table.hour) = 17 THEN '17:00 ~ 18:00'
+        WHEN HOUR(time_table.hour) = 18 THEN '18:00 ~ 19:00'
+        WHEN HOUR(time_table.hour) = 19 THEN '19:00 ~ 20:00'
+        WHEN HOUR(time_table.hour) = 20 THEN '20:00 ~ 21:00'
+        WHEN HOUR(time_table.hour) = 21 THEN '21:00 ~ 22:00'
+        WHEN HOUR(time_table.hour) = 22 THEN '22:00 ~ 23:00'
+        WHEN HOUR(time_table.hour) = 23 THEN '23:00 ~ 24:00'
+      END AS day_name,
+      COALESCE(COUNT(DISTINCT u.userkey), 0) AS su_count,
+      COALESCE(COUNT(DISTINCT p1.postkey), 0) AS pc_count,
+      COALESCE(COUNT(DISTINCT p2.postkey), 0) AS pd_count
+    FROM 
+      (SELECT SEC_TO_TIME(n * 3600) AS `hour`
+        FROM (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL 
+              SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL 
+              SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL 
+              SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL 
+              SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL 
+              SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL 
+              SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20 UNION ALL 
+              SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23) hours
+      ) AS time_table
+    LEFT JOIN `user` u ON HOUR(u.create_dtm) = HOUR(time_table.hour) AND u.isdeleted = 0 AND u.create_dtm <![CDATA[>=]]> #{start_dtm} AND u.create_dtm <![CDATA[<=]]> #{end_dtm}
+    LEFT JOIN `post` p1 ON HOUR(p1.create_dtm) = HOUR(time_table.hour) AND p1.isdeleted = 0 AND p1.create_dtm <![CDATA[>=]]> #{start_dtm} AND p1.create_dtm <![CDATA[<=]]> #{end_dtm}
+    LEFT JOIN `post` p2 ON HOUR(p2.deal_dtm) = HOUR(time_table.hour) AND p2.isdeleted = 0 AND p2.deal_dtm <![CDATA[>=]]> #{start_dtm} AND p2.deal_dtm <![CDATA[<=]]> #{end_dtm}
+    GROUP BY HOUR(time_table.hour), time_table.hour
+    ORDER BY signup_day
+    </select>
+
+    <select id="analuserbyday" parameterType="String" resultType="com.sist.back.vo.admin.AnaluserbydayVO">
+    SELECT 
+      weekday_table.weekday AS signup_day,
+      CASE
+        WHEN weekday_table.weekday = 0 THEN '월요일'
+        WHEN weekday_table.weekday = 1 THEN '화요일'
+        WHEN weekday_table.weekday = 2 THEN '수요일'
+        WHEN weekday_table.weekday = 3 THEN '목요일'
+        WHEN weekday_table.weekday = 4 THEN '금요일'
+        WHEN weekday_table.weekday = 5 THEN '토요일'
+        WHEN weekday_table.weekday = 6 THEN '일요일'
+      END AS day_name,
+      COALESCE(COUNT(DISTINCT u.userkey), 0) AS su_count,
+      COALESCE(COUNT(DISTINCT p1.postkey), 0) AS pc_count,
+      COALESCE(COUNT(DISTINCT p2.postkey), 0) AS pd_count
+    FROM 
+      (SELECT 0 AS weekday UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6) AS weekday_table
+    LEFT JOIN `user` u ON WEEKDAY(u.create_dtm) = weekday_table.weekday AND u.isdeleted = 0 AND u.create_dtm <![CDATA[>=]]> #{start_dtm} AND u.create_dtm <![CDATA[<=]]> #{end_dtm}
+    LEFT JOIN `post` p1 ON WEEKDAY(p1.create_dtm) = weekday_table.weekday AND p1.isdeleted = 0 AND p1.create_dtm <![CDATA[>=]]> #{start_dtm} AND p1.create_dtm <![CDATA[<=]]> #{end_dtm}
+    LEFT JOIN `post` p2 ON WEEKDAY(p2.deal_dtm) = weekday_table.weekday AND p2.isdeleted = 0 AND p2.deal_dtm <![CDATA[>=]]> #{start_dtm} AND p2.deal_dtm <![CDATA[<=]]> #{end_dtm}
+    GROUP BY weekday_table.weekday
+    ORDER BY signup_day
+    </select>
+
+    <select id="analregion" parameterType="String" resultType="com.sist.back.vo.admin.AnalregionVO">
+    SELECT 
+    <if test="region1 == null or region1 == '' or region1 == 'null'">
+        region1,
+    </if>
+    <if test="region1 != null and region1 != '' and region1 != 'null' and (region2 == null or region2 == '' or region2 == 'null')">
+        region2,
+    </if>
+    <if test="(region3 != null and region3 != '' and region3 != 'null') or (region2 != null and region2 != '' and region2 != 'null')">
+        region3,
+    </if>
+       SUM(u_cnt) AS u_cnt, SUM(p_cnt) AS p_cnt, SUM(d_cnt) AS d_cnt, SUM(d_price) AS d_price 
+    FROM (
+      SELECT 
+        region1, region2, region3,
+        IFNULL(u.u_cnt, 0) AS u_cnt, 
+        IFNULL(p.p_cnt, 0) AS p_cnt, 
+        IFNULL(d.d_cnt, 0) AS d_cnt, 
+        IFNULL(d.d_price, 0) AS d_price
+      FROM 
+          `town` t
+      LEFT JOIN (
+          SELECT a.townkey, COUNT(u.userkey) AS u_cnt
+          FROM `address` a
+          JOIN `user` u ON u.userkey = a.userkey
+          WHERE a.isselected = 1  
+          GROUP BY a.townkey
+      ) u ON t.townkey = u.townkey
+      LEFT JOIN (
+          SELECT p.townkey, COUNT(p.postkey) AS p_cnt
+          FROM `post` p
+          WHERE p.isdeleted = 0 AND p.poststatus != 0
+          GROUP BY p.townkey
+      ) p ON t.townkey = p.townkey
+      LEFT JOIN (
+          SELECT p.townkey, COUNT(p.postkey) AS d_cnt, SUM(IFNULL(p.lastprice, 0)) AS d_price
+          FROM `post` p
+          WHERE p.isdeleted = 0 AND p.poststatus = 3
+          GROUP BY p.townkey
+      ) d ON t.townkey = d.townkey
+      HAVING (u_cnt <![CDATA[>]]> 0 OR p_cnt <![CDATA[>]]> 0 OR d_cnt <![CDATA[>]]> 0 OR d_price <![CDATA[>]]> 0)
+      <if test="region1 != null and region1 != '' and region1 != 'null'">
+          AND t.region1 = #{region1}
+      </if>
+      <if test="region2 != null and region2 != '' and region2 != 'null'">
+          AND t.region2 = #{region2}
+      </if>
+      <if test="region3 != null and region3 != '' and region3 != 'null'">
+          AND t.region3 = #{region3}
+      </if>
+      ORDER BY t.townkey
+    ) x
+    GROUP BY 
+    <if test="region1 == null or region1 == '' or region1 == 'null'">
+        region1
+    </if>
+    <if test="region1 != null and region1 != '' and region1 != 'null' and (region2 == null or region2 == '' or region2 == 'null')">
+        region1, region2
+    </if>
+    <if test="(region3 != null and region3 != '' and region3 != 'null') or (region2 != null and region2 != '' and region2 != 'null')">
+        region1, region2, region3
+    </if>
+    </select>
+</mapper>

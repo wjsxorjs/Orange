@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.AddressMapper">
+
+    <resultMap id="getAddressByUserkeyMap" type="com.sist.back.vo.AddressVO">
+        <id column="townkey" property="townkey" />
+        <association property="tvo" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+    </resultMap>
+
+    <select id="getAddressByUserkey" parameterType="String" resultMap="getAddressByUserkeyMap">
+    SELECT * FROM `address`
+     WHERE userkey = #{userkey}
+     ORDER BY isselected DESC
+    </select>
+
+    <update id="changeSelected" parameterType="String">
+    UPDATE `address`
+      SET isselected = 
+      CASE WHEN isselected = 0 THEN 1 
+           WHEN isselected = 1 THEN 0
+       END
+     WHERE userkey = #{userkey}
+    </update>
+
+    <delete id="deleteAddress" parameterType="String">
+    DELETE FROM `address`
+     WHERE addresskey = #{addresskey}
+    </delete>
+
+    <insert id="addAddress" parameterType="map">
+    INSERT INTO `address`
+      (userkey,
+      townkey,
+      isselected,
+      iscertified,
+      `range`,
+      isalarm) 
+    VALUES (
+      #{userkey},
+      #{townkey},
+      #{nowLength},
+      0,
+      0,
+      0
+      )
+    </insert>
+    
+    <update id="modifyAddress" parameterType="map">
+    UPDATE `address`
+      SET townkey = #{townkey}
+    WHERE addresskey = #{addresskey}
+    </update>
+</mapper>

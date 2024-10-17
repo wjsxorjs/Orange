@@ -1,0 +1,14 @@
+
+.Title{
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.Seller{
+    display: flex;
+    justify-content: space-between;
+}
+
+.SellerReview{
+    text-align: right;
+}

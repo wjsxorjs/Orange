@@ -1,0 +1,103 @@
+.signupContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    width: 100%;
+    max-width: 400px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .inputGroup {
+    margin-bottom: 15px;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .signupButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #ff7e36;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .signupButton:hover {
+    background-color: #ff5a00;
+  }
+  
+  .footerText {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+  }
+  
+  .link {
+    color: #ff7e36;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  .inputWithButton {
+    display: flex;
+    align-items: center;
+  }
+  
+  .verifyButton {
+    //margin-left: 5px;
+    margin-top: 5px;
+    padding: 6px 10px; /* 버튼 크기 줄이기 */
+    font-size: 14px; /* 글자 크기 줄이기 */
+    background-color: #ff7e36; /* 당근마켓 오렌지 색상 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .verifyButton:hover {
+    background-color: #ff5a00; /* hover 시 더 진한 오렌지 색상 */
+  }
+  
+  .input {
+    flex: 1; /* input이 버튼 옆에서 충분한 공간을 차지하게 */
+  }
+  

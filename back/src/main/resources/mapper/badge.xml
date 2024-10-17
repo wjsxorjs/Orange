@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.BadgeMapper">
+    <!-- 전체 배지 -->
+    <select id="getAllBadge" resultType="com.sist.back.vo.BadgeVO">
+        SELECT * FROM badge
+        WHERE isdeleted = 0
+    </select>
+
+    <!-- 비활성화 배지 -->
+    <select id="getAllOffBadge" resultType="com.sist.back.vo.BadgeVO">
+        SELECT * FROM badge
+        WHERE isdeleted = 1
+    </select>
+
+    <!-- 사용자 소유 배지 -->
+    <select id="getBadge" parameterType="String" resultType="com.sist.back.vo.BadgeVO">
+        SELECT b.*, ub.isrepresent 
+        FROM badge b 
+        JOIN userbadge ub ON b.badgekey = ub.badgekey
+        WHERE ub.userkey = #{userkey} AND b.isdeleted = 0
+    </select>
+
+    <!-- 사용자 소유 배지 개수 -->
+    <select id="getBadgeCount" parameterType="String" resultType="int">
+        SELECT COUNT(*) 
+        FROM badge b 
+        JOIN userbadge ub ON b.badgekey = ub.badgekey
+        WHERE ub.userkey = #{userkey} AND b.isdeleted = 0
+    </select>
+
+
+    <!-- 대표 배지 설정 -->
+    <update id="representBadge" parameterType="map">
+        UPDATE userbadge ub
+        SET ub.isrepresent = CASE
+            WHEN ub.badgekey = #{badgekey} AND EXISTS (
+                SELECT 1
+                FROM badge b
+                WHERE b.badgekey = ub.badgekey
+                AND b.isrepresentable = 1
+            ) THEN 1
+            ELSE 0
+        END
+        WHERE ub.userkey = #{userkey}
+    </update>
+
+    <!-- 대표 배지 취소 -->
+    <update id="cancelRep" parameterType="map">
+        UPDATE userbadge
+        SET isrepresent = 0
+        WHERE userkey = #{userkey} AND badgekey = #{badgekey}
+    </update>
+
+    <!-- 배지 부여(1,3,6.상대방에게 후기 1,5,10개 남기기) -->
+    <insert id="giveBadgeForReviews" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, CASE
+                WHEN review_count = 1 THEN 1
+                WHEN review_count = 5 THEN 3
+                WHEN review_count = 10 THEN 6
+            END AS badgekey, NOW(), 0
+        FROM (
+            SELECT estimateuserkey, COUNT(*) AS review_count
+            FROM manner
+            WHERE estimateuserkey = #{userkey}
+            GROUP BY estimateuserkey
+        ) AS review_data
+        WHERE review_count IN (1, 5, 10)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE
+                WHEN review_count = 1 THEN 1
+                WHEN review_count = 5 THEN 3
+                WHEN review_count = 10 THEN 6
+            END
+        )
+    </insert>
+
+    <!-- 배지 부여(5.시간 약속 후기 5개 or 9.첫 긍정적 후기 받기) -->
+    <insert id="giveBadgeForGoodReviews" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 
+            CASE 
+                WHEN review_count = 5 THEN 5
+                WHEN positive_review_count = 1 THEN 9
+            END AS badgekey, 
+            NOW(), 0
+        FROM (
+            SELECT userkey,
+                COUNT(CASE WHEN reviewlistkey IN (5, 12, 26, 30) THEN 1 END) AS review_count,
+                COUNT(CASE WHEN ismanner = 1 THEN 1 END) AS positive_review_count
+            FROM manner
+            WHERE userkey = #{userkey}
+            GROUP BY userkey
+        ) AS badge_data
+        WHERE (review_count = 5 OR positive_review_count = 1)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE 
+                WHEN review_count = 5 THEN 5 
+                WHEN positive_review_count = 1 THEN 9 
+            END
+        )
+    </insert>
+
+    <!-- 배지 부여(2.관심 키워드 설정) -->
+    <insert id="giveBadgeFirstKeyword" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 2, NOW(), 0 
+        FROM keyword
+        WHERE userkey = #{userkey}
+        AND 2 NOT IN (SELECT badgekey FROM userbadge WHERE userkey = #{userkey})
+        GROUP BY userkey
+        HAVING COUNT(*) = 1
+    </insert>
+
+    <!-- 배지 부여(4.판매글 20개 or 7.첫 판매글 or 8.판매글 5개 or 10.판매글 50개) -->
+    <insert id="giveBadgeForPosts" parameterType="string">
+        INSERT INTO userbadge (userkey, badgekey, create_dtm, isrepresent)
+        SELECT #{userkey}, 
+            CASE 
+                WHEN post_count = 1 THEN 7
+                WHEN post_count = 5 THEN 8
+                WHEN post_count = 20 THEN 4
+                WHEN post_count = 50 THEN 10
+            END AS badgekey, 
+            NOW(), 0
+        FROM (
+            SELECT userkey, COUNT(*) AS post_count
+            FROM post
+            WHERE userkey = #{userkey}
+            GROUP BY userkey
+        ) AS post_data
+        WHERE post_count IN (1, 5, 20, 50)
+        AND NOT EXISTS (
+            SELECT 1 FROM userbadge 
+            WHERE userkey = #{userkey} 
+            AND badgekey = CASE 
+                WHEN post_count = 1 THEN 7 
+                WHEN post_count = 5 THEN 8 
+                WHEN post_count = 20 THEN 4 
+                WHEN post_count = 50 THEN 10 
+            END
+        )
+    </insert>
+
+    <!-- 배지 편집 -->
+    <update id="editBadge" parameterType="map">
+        UPDATE badge
+        SET name = #{name}, imgurl = #{imgurl}, precontent = #{precontent}, postcontent = #{postcontent}, isrepresentable = #{isrepresentable}
+        WHERE badgekey = #{badgekey}
+    </update>
+
+    <!-- 배지 비활성화 -->
+    <update id="badgeOff" parameterType="String">
+        UPDATE badge
+        SET isdeleted = 1, delete_dtm = NOW()
+        WHERE badgekey = #{badgekey}
+    </update>
+
+    <!-- 배지 활성화 -->
+    <update id="badgeOn" parameterType="String">
+        UPDATE badge
+        SET isdeleted = 0, update_dtm = NOW()
+        WHERE badgekey = #{badgekey}
+    </update>
+</mapper>
+

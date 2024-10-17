@@ -1,0 +1,895 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="com.sist.back.vo.userVO">
+        <id column="userkey" property="userkey"/>
+        <result column="id" property="id"/>
+        <result column="pw" property="pw"/>
+        <result column="name" property="name"/>
+        <result column="nickname" property="nickname"/>
+        <result column="phone" property="phone"/>
+        <result column="access_token" property="access_token"/>
+        <result column="refresh_token" property="refresh_token"/>
+        <result column="email" property="email"/>
+        <result column="imgurl" property="imgurl"/>
+        <result column="login_dtm" property="login_dtm"/>
+        <result column="isdisturb" property="isdisturb"/>
+        <result column="disturb_start" property="disturb_start"/>
+        <result column="disturb_end" property="disturb_end"/>
+        <result column="isauthorized" property="isauthorized"/>
+        <result column="create_dtm" property="create_dtm"/>
+        <result column="update_dtm" property="update_dtm"/>
+        <result column="delete_dtm" property="delete_dtm"/>
+        <result column="isdeleted" property="isdeleted"/>
+         
+        <!-- AddressVO 매핑 -->
+         <collection property="a_list" ofType="com.sist.back.vo.AddressVO" select="getAddressByUserKey" column="userkey">
+        </collection>
+        <!-- PostVO 매핑 -->
+        <collection property="p_list" ofType="com.sist.back.vo.PostVO" select="getPostsByUserKey" column="userkey"/>
+        <!-- KeywordVO 매핑 -->
+        <collection property="k_list" ofType="com.sist.back.vo.KeywordVO" select="getKeywordByUserKey" column="userkey"/>
+        <!-- MannerVO 매핑 -->
+        <collection property="m_list" ofType="com.sist.back.vo.MannerVO" select="getMannersByUserKey" column="userkey"/>
+        <!-- LikeUserVO 매핑 -->
+        <collection property="l_list" ofType="com.sist.back.vo.LikeUserVO" select="getLikeUsersByUserKey" column="userkey"/>
+        <!-- BlockedVO 매핑 -->
+        <collection property="b_list" ofType="com.sist.back.vo.BlockedVO" select="getBlockedUsersByUserKey" column="userkey"/>
+        
+        <!--wishlist 매핑-->
+        <collection property="w_list" ofType="com.sist.back.vo.WishlistVO" select="getWishlistByUserKey" column="userkey"/>
+        <!--interestCategory 매핑-->
+        <collection property="ic_list" ofType="com.sist.back.vo.InterestCategoryVO" select="getInterestCategoryByUserKey" column="userkey"/>
+        <!--buy_list 매핑-->
+        <collection property="buy_list" ofType="com.sist.back.vo.PostVO" select="getBuyListByUserKey" column="userkey"/>
+        <!--cell_list 매핑-->
+        <collection property="cell_list" ofType="com.sist.back.vo.PostVO" select="getCellListByUserKey" column="userkey"/>
+        
+        <!-- NoseeVO 매핑 -->
+        <collection property="n_list" ofType="com.sist.back.vo.NoseeVO" select="getNoseeUsersByUserKey" column="userkey"/>
+        <!-- UserBadgeVO 매핑 -->
+        <collection property="ub_list" ofType="com.sist.back.vo.UserBadgeVO" select="getUserBadgesByUserKey" column="userkey"/>
+    </resultMap>
+
+    <resultMap id="mypageMap" type="com.sist.back.vo.userVO">
+        <id column="userkey" property="userkey"/>
+        <!--wishlist 매핑-->
+        <collection property="w_list" ofType="com.sist.back.vo.WishlistVO" select="getWishlistByUserKey" column="userkey"/>
+        <!--buy_list 매핑-->
+        <collection property="buy_list" ofType="com.sist.back.vo.PostVO" select="getBuyListMyPage" column="userkey"/>
+        <!--cell_list 매핑-->
+        <collection property="cell_list" ofType="com.sist.back.vo.PostVO" select="getCellListMyPage" column="userkey"/>
+    </resultMap>
+
+     <!-- AddressVO와 TownVO를 조인하여 가져오는 매핑 -->
+    <resultMap id="addressResultMap" type="com.sist.back.vo.AddressVO">
+        <id column="addresskey" property="addresskey"/>
+        <result column="userkey" property="userkey"/>
+        <result column="isselected" property="isselected"/>
+        <result column="iscertified" property="iscertified"/>
+        <result column="range" property="range"/>
+        <result column="isalarm" property="isalarm"/>
+        
+        <!-- TownVO 매핑 -->
+        <association property="tvo" javaType="com.sist.back.vo.TownVO">
+            <result column="townkey" property="townkey"/>
+            <result column="region1" property="region1"/>
+            <result column="region2" property="region2"/>
+            <result column="region3" property="region3"/>
+        </association>
+    </resultMap>
+
+      <!-- MannerVO와 ReviewListVO를 조인하여 가져오는 매핑 -->
+    <resultMap id="MannerResultMap" type="com.sist.back.vo.MannerVO">
+        <id column="mannerkey" property="mannerkey"/>
+        <result column="userkey" property="userkey"/>
+        <result column="reviewlistkey" property="reviewlistkey"/>
+        <result column="estimateuserkey" property="estimateuserkey"/>
+        <result column="ismanner" property="ismanner"/>
+        <result column="chatordeal" property="chatordeal"/>
+        <result column="contetkey" property="contetkey"/>
+        <result column="create_dtm" property="create_dtm"/>
+        <result column="delete_dtm" property="delete_dtm"/>
+        <result column="update_dtm" property="update_dtm"/>
+        <result column="isdeleted" property="isdeleted"/>
+        
+        <!--  ReviewListVO 매핑 -->
+        <association property="rvo" javaType="com.sist.back.vo.ReviewListVO">
+            <result column="reviewlistkey" property="reviewlistkey"/>
+            <result column="preference" property="preference"/>
+            <result column="review" property="review"/>
+        </association>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfoByEstimateUserKey" column="estimateuserkey"/>
+    </resultMap>
+
+      <!-- UserBadgeVO BadgeVO 조인하여 가져오는 매핑 -->
+    <resultMap id="UserBadgeResultMap" type="com.sist.back.vo.UserBadgeVO">
+        <id column="userbadgekey" property="userbadgekey"/>
+        <result column="userkey" property="userkey"/>
+        <result column="badgekey" property="badgekey"/>
+        <result column="create_dtm" property="create_dtm"/>
+        <result column="isrepresent" property="isrepresent"/>
+        <result column="postcontent" property="postcontent"/>
+        <!--  BadgeVO 매핑 -->
+        <association property="bvo" javaType="com.sist.back.vo.BadgeVO">
+            <result column="badgekey" property="badgekey"/>
+            <result column="name" property="name"/>
+            <result column="imgurl" property="imgurl"/>
+            <result column="precontent" property="precontent"/>
+            <result column="postcontent" property="postcontent"/>
+            <result column="isrepresentable" property="isrepresentable"/>
+            <result column="create_dtm" property="create_dtm"/>
+            <result column="update_dtm" property="update_dtm"/>
+            <result column="delete_dtm" property="delete_dtm"/>
+            <result column="isdeleted" property="isdeleted"/>
+            <result column="isrepresent" property="isrepresent"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="wishlistResultMap" type="com.sist.back.vo.WishlistVO">
+        <result column="postkey" property="postkey"/>
+        <association property="pvo" javaType="com.sist.back.vo.PostVO" select="com.sist.back.mapper.PostMapper.getPost_simple" column="postkey"/>
+    </resultMap>
+
+    <resultMap id="interestcategoryResultMap" type="com.sist.back.vo.InterestCategoryVO">
+        <result column="categorykey" property="categorykey"/>
+        <association property="cvo" javaType="com.sist.back.vo.categoryVO" select="getCategoryByCategoryKey" column="categorykey"/>
+    </resultMap>
+
+    <resultMap id="likeuserMap" type="com.sist.back.vo.LikeUserVO">
+        <result column="likeuserkey" property="likeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="likeuserkey"/>
+    </resultMap>
+    <resultMap id="blockedMap" type="com.sist.back.vo.BlockedVO">
+        <result column="blockeduserkey" property="blockeduserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="blockeduserkey"/>
+    </resultMap>
+    <resultMap id="noseeMap" type="com.sist.back.vo.NoseeVO">
+        <result column="noseeuserkey" property="noseeuserkey"/>
+        <association property="uvo" javaType="com.sist.back.vo.userVO" select="getUserInfo" column="noseeuserkey"/>
+    </resultMap>
+
+    <select id="getReportCountByUserKey" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM userreport
+        WHERE reportuserkey = #{userkey}
+    </select>
+
+    <!-- estimateuserkey로 user 닉네임과 imgurl -->
+    <select id="getUserInfoByEstimateUserKey" parameterType="String" resultType="com.sist.back.vo.userVO">
+        SELECT *
+        FROM user
+        WHERE userkey = #{estimateuserkey}
+    </select>
+
+    <!-- Town 테이블에서 townkey로 townVO 데이터를 가져오는 select 쿼리 -->
+    <select id="getTownByTownKey" resultType="com.sist.back.vo.TownVO" parameterType="String">
+        SELECT *
+        FROM town 
+        WHERE townkey = #{townkey}
+    </select>
+    <!-- 관리자 유저 정보 가져오기 -->
+    <select id="getUserForAdmin" parameterType="String" resultMap="userResultMap">
+      SELECT * FROM user
+      WHERE userkey = #{userkey}
+    </select>
+
+    <!-- 유저 정보 가져오기 -->
+    <select id="getUserForMyPage" parameterType="String" resultMap="mypageMap">
+      SELECT *
+      FROM `user`
+      WHERE userkey = #{userkey}
+    </select>
+
+    <!-- 유저 프로필 가져오기 -->
+    <select id="getUserProfile" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT *
+      FROM `user`
+      WHERE userkey = #{userkey}
+    </select>
+
+    <!-- 유저 img_url 가져오기 -->
+    <select id="getUserInfo" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user WHERE userkey = #{userkey}
+    </select>
+
+    <!-- Address 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getAddressByUserKey" resultMap="addressResultMap" parameterType="String">
+        SELECT address.*, town.townkey, town.region1, town.region2, town.region3
+        FROM address
+        LEFT JOIN town ON address.townkey = town.townkey
+        WHERE address.userkey = #{userkey}
+    </select>
+    <!-- Manner 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getMannersByUserKey" resultMap="MannerResultMap" parameterType="String">
+        SELECT manner.*, reviewlist.reviewlistkey, reviewlist.preference, reviewlist.review
+        FROM manner
+        LEFT JOIN reviewlist ON manner.reviewlistkey = reviewlist.reviewlistkey
+        WHERE manner.userkey = #{userkey}
+    </select>
+    <!-- Post 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getPostsByUserKey" resultType="com.sist.back.vo.PostVO" parameterType="String">
+        SELECT * FROM `post` WHERE userkey = #{userkey}
+    </select>
+   
+
+    <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getWishlistByUserKey" resultMap="wishlistResultMap" parameterType="String">
+        SELECT * FROM wishlist WHERE userkey = #{userkey}
+    </select>
+
+    <!-- interestcategory 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getInterestCategoryByUserKey" resultMap="interestcategoryResultMap" parameterType="String">
+        SELECT * FROM interestcategory WHERE userkey = #{userkey}
+    </select>
+    <select id="getCategoryByCategoryKey" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+        SELECT * FROM `category` WHERE categorykey = #{categorykey}
+    </select>
+
+    <select id="getBuyListMyPage" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE dealuserkey = #{userkey}
+        AND poststatus = 3
+        ORDER BY deal_dtm desc
+    </select>
+
+    <select id="getCellListMyPage" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND poststatus <![CDATA[>]]> 0
+        ORDER BY create_dtm desc
+    </select>
+    <select id="getBuyListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE dealuserkey = #{userkey}
+        AND poststatus = 3
+        ORDER BY deal_dtm desc
+    </select>
+
+    <select id="getCellListByUserKey" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="String">
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND poststatus <![CDATA[>]]> 0
+        ORDER BY create_dtm desc
+    </select>
+
+    <!-- wishlist 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getKeywordByUserKey" resultType="com.sist.back.vo.KeywordVO" parameterType="String">
+        SELECT * FROM keyword WHERE userkey = #{userkey}
+    </select>
+    <!-- LikeUser 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getLikeUsersByUserKey" resultMap="likeuserMap" parameterType="String">
+        SELECT l.*, u.*
+        FROM likeuser l
+        JOIN user u ON l.likeuserkey = u.userkey
+        WHERE l.userkey = #{userkey}
+    </select>
+    <!-- Blocked 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getBlockedUsersByUserKey" resultMap="blockedMap" parameterType="String">
+        SELECT b.*, u.*
+        FROM blocked b
+        JOIN user u ON b.blockeduserkey = u.userkey
+        WHERE b.userkey = #{userkey}
+    </select>
+    <!-- Nosee 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getNoseeUsersByUserKey" resultMap="noseeMap" parameterType="String">
+        SELECT n.*, u.*
+        FROM nosee n
+        JOIN user u ON n.noseeuserkey = u.userkey
+        WHERE n.userkey = #{userkey}
+    </select>
+    
+
+    <!-- Manner 테이블에서 데이터를 가져오는 select 쿼리 -->
+    <select id="getUserBadgesByUserKey" resultMap="UserBadgeResultMap" parameterType="String">
+        SELECT userbadge.*, badge.badgekey, badge.name, badge.imgurl
+        FROM userbadge
+        LEFT JOIN badge ON userbadge.badgekey = badge.badgekey
+        WHERE userbadge.userkey = #{userkey}
+    </select>
+
+    <!-- 로그인 -->
+    <select id="login" resultType="com.sist.back.vo.userVO" parameterType="com.sist.back.vo.userVO">
+        SELECT * FROM user
+         WHERE id = #{id} and pw = #{pw} and isdeleted = 0
+    </select>
+
+    <!-- 로그인 시간 업데이트 -->
+    <update id="login_dtm" parameterType="com.sist.back.vo.userVO">
+        UPDATE user
+           SET login_dtm = now()
+         WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 로그인 시간 업데이트 -->
+    <update id="kakao_login_dtm" parameterType="String">
+        UPDATE user
+           SET login_dtm = now()
+         WHERE email = #{email}
+    </update>
+
+    <!-- 관리자 유저 정보 카운트 -->
+    <select id="countForAdmin" resultType="com.sist.back.vo.UserCountVO">
+      SELECT 
+        COUNT(*) AS cntAll, 
+        COUNT(CASE WHEN isdeleted = 0 THEN 1 END) AS cntNotDel,
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS cntDel,
+        COUNT(CASE WHEN DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTAll,
+        COUNT(CASE WHEN isdeleted = 0 AND DATE(create_dtm) = CURDATE() THEN 1 END) AS cntTNotDel,
+        COUNT(CASE WHEN isdeleted = 1 AND DATE(delete_dtm) = CURDATE() THEN 1 END) AS cntTDel
+      FROM user
+    </select>
+
+    <!-- 관리자 페이징 검색 -->
+    <select id="searchForAdminPaging" parameterType="map" resultType="int">
+      SELECT COUNT(*)
+      FROM user
+      <where>
+        <if test="type != ''">
+          <choose>
+            <when test="search_type == 'name'">AND name LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'id'">AND id LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'email'">AND email LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'phone'">AND phone LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'nickname'">AND nickname LIKE CONCAT('%', #{type}, '%')</when>
+          </choose>
+        </if>
+
+        <if test="regist_start_date != '' and regist_end_date != ''">
+          AND create_dtm BETWEEN #{regist_start_date} AND #{regist_end_date}
+        </if>
+        <if test="regist_start_date != '' and regist_end_date == ''">
+          AND create_dtm <![CDATA[>=]]> #{regist_start_date}
+        </if>
+        <if test="regist_start_date == '' and regist_end_date != ''">
+          AND create_dtm <![CDATA[<=]]> #{regist_end_date}
+        </if>
+
+        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+          AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
+        </if>
+        <if test="recent_login_start_date != '' and recent_login_end_date == ''">
+          AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
+        </if>
+        <if test="recent_login_start_date == '' and recent_login_end_date != ''">
+          AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
+        </if>
+
+        <if test="isdeleted != ''">
+          AND isdeleted = #{isdeleted}
+        </if>
+
+        <if test="isauthorized != ''">
+          AND isauthorized = #{isauthorized}
+        </if>
+      </where>
+    </select>
+
+    <!-- 관리자 유저 검색 -->
+    <select id="searchForAdmin" parameterType="map" resultMap="userResultMap">
+      SELECT x.*
+      FROM ( SELECT *, row_number() over (order by userkey DESC) rnum FROM user
+       <where>
+        <if test="type != ''">
+          <choose>
+            <when test="search_type == 'name'">AND name LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'id'">AND id LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'email'">AND email LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'phone'">AND phone LIKE CONCAT('%', #{type}, '%')</when>
+            <when test="search_type == 'nickname'">AND nickname LIKE CONCAT('%', #{type}, '%')</when>
+          </choose>
+        </if>
+
+        <if test="regist_start_date != '' and regist_end_date != ''">
+          AND create_dtm BETWEEN #{regist_start_date} AND #{regist_end_date}
+        </if>
+        <if test="regist_start_date != '' and regist_end_date == ''">
+          AND create_dtm <![CDATA[>=]]> #{regist_start_date}
+        </if>
+        <if test="regist_start_date == '' and regist_end_date != ''">
+          AND create_dtm <![CDATA[<=]]> #{regist_end_date}
+        </if>
+
+        <if test="recent_login_start_date != '' and recent_login_end_date != ''">
+          AND login_dtm BETWEEN #{recent_login_start_date} AND #{recent_login_end_date}
+        </if>
+        <if test="recent_login_start_date != '' and recent_login_end_date == ''">
+          AND login_dtm <![CDATA[>=]]> #{recent_login_start_date}
+        </if>
+        <if test="recent_login_start_date == '' and recent_login_end_date != ''">
+          AND login_dtm <![CDATA[<=]]> #{recent_login_end_date}
+        </if>
+
+        <if test="isdeleted != ''">
+          AND isdeleted = #{isdeleted}
+        </if>
+
+        <if test="isauthorized != ''">
+          AND isauthorized = #{isauthorized}
+        </if>
+       </where> 
+    ) x
+    WHERE x.rnum BETWEEN #{begin} and #{end}
+    </select>
+
+    <!-- 사용자 모아보기, 미노출, 차단 여부 확인 -->
+    <select id="F_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </select>
+    <select id="N_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </select>
+    <select id="B_Check" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </select>
+
+
+    <delete id="likeN" parameterType="Map">
+        DELETE
+        FROM `likeuser`
+        WHERE userkey = #{me}
+        AND likeuserkey = #{you}
+    </delete>
+    <insert id="likeI" parameterType="Map">
+        INSERT
+        INTO `likeuser`(userkey,likeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+    <delete id="noseeN" parameterType="Map">
+        DELETE
+        FROM `nosee`
+        WHERE userkey = #{me}
+        AND noseeuserkey = #{you}
+    </delete>
+    <insert id="noseeI" parameterType="Map">
+        INSERT
+        INTO `nosee`(userkey,noseeuserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+    <delete id="blockN" parameterType="Map">
+        DELETE
+        FROM `blocked`
+        WHERE userkey = #{me}
+        AND blockeduserkey = #{you}
+    </delete>
+    <insert id="blockI" parameterType="Map">
+        INSERT
+        INTO `blocked`(userkey,blockeduserkey,create_dtm)
+        VALUES (#{me}, #{you}, NOW())
+    </insert>
+
+
+    
+    <select id="getDidsell" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `chatroom`
+        WHERE seller_userkey = #{userkey_me}
+        AND buyer_userkey = #{userkey_you}
+        AND update_dtm BETWEEN #{date_start} AND #{date_end}
+    </select>
+
+    <select id="getDidbuy" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `chatroom`
+        WHERE buyer_userkey = #{userkey_me}
+        AND seller_userkey = #{userkey_you}
+        AND update_dtm BETWEEN #{date_start} AND #{date_end}
+    </select>
+
+    <select id="getCellListForUserPage" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="Map">
+      SELECT * FROM (
+          SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+              SELECT p.* 
+              FROM post p
+              WHERE p.userkey = #{userkey}
+              AND poststatus IN (1,2)
+              ORDER BY p.update_dtm DESC
+          ) a, (SELECT @RN:=0) b
+      ) c 
+      LIMIT 5
+    </select>
+    <select id="getMorePost" resultMap="com.sist.back.mapper.PostMapper.post_image_map" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT p.* 
+                FROM post p
+                WHERE p.userkey = #{userkey}
+                AND poststatus IN (1,2)
+                AND p.postkey <![CDATA[<=]]> #{limitpostkey}
+                ORDER BY p.update_dtm DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum <![CDATA[>]]> #{lastpostkey}
+        LIMIT 5
+    </select>
+    <select id="getRestList" resultType="int" parameterType="Map">
+        SELECT COUNT(*) FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT p.* 
+                FROM post p
+                WHERE p.userkey = #{userkey}
+                AND poststatus IN (1,2)
+                AND p.postkey <![CDATA[<=]]> #{limitpostkey}
+                ORDER BY p.update_dtm DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum <![CDATA[>]]> #{lastpostkey}
+    </select>
+
+
+    <select id="getPostsForAdmin" resultMap="com.sist.back.mapper.PostMapper.post_simple" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT p.* 
+                FROM `post` p
+                WHERE p.userkey = #{userkey}
+                ORDER BY p.postkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+
+
+   <!-- 관심목록 수, 내용 -->
+    <select id="getWishlistCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `wishlist`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getInterestCategoryCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `interestcategory`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getKeywordCount" resultType="int" parameterType="Map">
+        SELECT COUNT(*)
+        FROM `keyword`
+        WHERE userkey = #{userkey}
+    </select>
+
+    <select id="getWishlistByMap" resultMap="wishlistResultMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT w.* 
+                FROM wishlist w
+                WHERE w.userkey = #{userkey}
+                ORDER BY w.wishlistkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getInterestCategoryByMap" resultMap="interestcategoryResultMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM interestcategory
+                WHERE userkey = #{userkey}
+                ORDER BY autokey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getKeywordByMap" resultType="com.sist.back.vo.KeywordVO" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `keyword`
+                WHERE userkey = #{userkey}
+                ORDER BY keywordkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <insert id="addLikeCategory" parameterType="Map">
+      INSERT
+      INTO `interestcategory`(userkey,categorykey)
+      VALUES (#{userkey},#{categorykey})
+    </insert>
+
+    <insert id="addLikeKeyword" parameterType="Map">
+      INSERT
+      INTO `keyword`(userkey, content)
+      VALUES(#{userkey}, #{content} )
+    </insert>
+
+
+    
+    <!-- buy_list -->
+    <select id="getBuyTotalCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE dealuserkey = #{userkey}
+    </select>
+    <select id="getBuyCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE dealuserkey = #{userkey}
+      <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+          AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+      </if>
+    </select>
+
+    <select id="getBuylistByMap" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `post`
+                WHERE dealuserkey = #{userkey}
+                <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                    AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+                </if>
+                ORDER BY postkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+
+    <!-- cell_list -->
+    <select id="getCellTotalCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+    </select>
+
+    <select id="getCellPartCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+      AND poststatus = #{poststatus}
+    </select>
+
+    <select id="getCellCount" resultType="int" parameterType="Map">
+      SELECT COUNT(*)
+      FROM `post`
+      WHERE userkey = #{userkey}
+      AND poststatus = #{poststatus}
+      <if test="poststatus == 1 or poststatus == 2">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND create_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 3">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+      <if test="poststatus == 4">
+        <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+            AND update_dtm BETWEEN #{start_date} AND #{end_date}
+        </if>
+      </if>
+    </select>
+
+    <select id="getCelllistByMap" resultMap="com.sist.back.mapper.PostMapper.postMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `post`
+                WHERE userkey = #{userkey}
+                AND poststatus = #{poststatus}
+                <if test="poststatus == 1 or poststatus == 2">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND create_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY create_dtm DESC
+                </if>
+                <if test="poststatus == 3">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND deal_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY deal_dtm DESC
+                </if>
+                <if test="poststatus == 4">
+                  <if test="start_date != null and end_date != null and start_date != '' and end_date != ''">
+                      AND update_dtm BETWEEN #{start_date} AND #{end_date}
+                  </if>
+                  ORDER BY update_dtm DESC
+                </if>
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <!-- another user list -->
+
+    <select id="getlikeuserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `likeuser`
+      WHERE userkey = #{userkey}
+    </select>
+    <select id="getblockeduserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `blocked`
+      WHERE userkey = #{userkey}
+    </select>
+    <select id="getnoseeuserCount" resultType="int" parameterType="String">
+      SELECT COUNT(*)
+      FROM `nosee`
+      WHERE userkey = #{userkey}
+    </select>
+
+
+    <select id="getlikeuserByMap" resultMap="likeuserMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `likeuser`
+                WHERE userkey = #{userkey}
+                ORDER BY likekey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getblockeduserByMap" resultMap="blockedMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `blocked`
+                WHERE userkey = #{userkey}
+                ORDER BY blockedkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+    <select id="getnoseeuserByMap" resultMap="noseeMap" parameterType="Map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT * 
+                FROM `nosee`
+                WHERE userkey = #{userkey}
+                ORDER BY noseekey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <delete id="uncheckLikeuser" parameterType="String">
+      DELETE
+      FROM `likeuser`
+      WHERE likeuserkey = #{userkey}
+    </delete>
+    <delete id="uncheckBlockeduser" parameterType="String">
+      DELETE
+      FROM `blocked`
+      WHERE blockeduser = #{userkey}
+    </delete>
+    <delete id="uncheckNoseeuser" parameterType="String">
+      DELETE
+      FROM `nosee`
+      WHERE noseeuserkey = #{userkey}
+    </delete>
+
+
+    <!-- 관리자 회원 탈퇴 -->
+    <update id="userDelForAdmin" parameterType="String">
+        UPDATE user
+        SET isdeleted = 1, delete_dtm = now()
+        WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 관리자 유저정보 수정 -->
+    <update id="userEditForAdmin" parameterType="com.sist.back.vo.userVO">
+        UPDATE user
+        SET pw = #{pw}, email = #{email}, phone = #{phone}, name =#{name}
+        WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 아이디 찾기  -->
+    <select id="findByid" parameterType="String" resultType="com.sist.back.vo.userVO" >
+        SELECT * FROM user 
+        WHERE id = #{id}
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="saveUser" parameterType="com.sist.back.vo.userVO">
+      INSERT INTO user (id, pw, name, nickname, phone, access_token, refresh_token, email, imgurl, login_dtm, isauthorized, create_dtm, isdeleted)
+      VALUES (
+        #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{access_token}, #{refresh_token}, #{email}, IFNULL(#{imgurl}, '/img/user/default_img.png'),now(), 0, now(), 0
+      )
+    </insert>
+
+    <!-- 카카오_이메일로 유저 확인-->
+    <select id="findbyEmail" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user 
+      WHERE email = #{email} LIMIT 1
+    </select>
+
+
+    <!-- 회원가입 전화번호 중복검사-->
+    <select id="findbyPhone" parameterType="String" resultType="com.sist.back.vo.userVO">
+      SELECT * FROM user 
+      WHERE phone = #{phone} LIMIT 1
+    </select>
+      
+    <!-- 이미지 변경 -->
+    <update id="editImage" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET imgurl = #{imgurl}
+      WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 이미지 삭제 -->
+    <update id="delImage" parameterType="String">
+      UPDATE user
+      SET imgurl = null
+      WHERE userkey = #{userkey}
+    </update>
+
+    <!-- 닉네임 변경(중복 확인) -->
+    <update id="editNickname" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET nickname = #{nickname}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM ( <!-- 1은 그냥 존재를 확인하기 위함 -->
+              SELECT 1 
+              FROM user 
+              WHERE nickname = #{nickname}
+          ) AS temp <!-- 동일한 테이블에 update랑 select 동시에 사용 불가 -> 서브쿼리를 임시 테이블(temp)로 감싸서 우회 -->
+      )
+  </update>
+
+    <!-- 이메일 변경(중복 확인 -> 인증 api 추가 고민) -->
+    <update id="editEmail" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET email = #{email}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE email = #{email}
+          ) AS temp
+      )
+    </update>
+
+    <!-- 비밀번호 변경(기존 비밀번호랑 일치하는지 확인) -->
+    <update id="editPw" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET pw = #{pw}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE pw = #{pw}
+          ) AS temp
+      )
+    </update>
+
+    <!-- 핸드폰 번호 변경 (중복 확인 -> 인증 api 추가 고민) -->
+    <update id="editPhone" parameterType="com.sist.back.vo.userVO">
+      UPDATE user
+      SET phone = #{phone}
+      WHERE userkey = #{userkey}
+      AND NOT EXISTS (
+          SELECT 1 FROM (
+              SELECT 1 
+              FROM user 
+              WHERE phone = #{phone}
+          ) AS temp
+      )
+    </update>
+    <select id="searchNickname" parameterType="String">
+      SELECT nickname FROM user WHERE userkey = #{userkey}
+    </select>
+</mapper>

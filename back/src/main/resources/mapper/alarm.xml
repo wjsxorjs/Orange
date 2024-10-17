@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.AlarmMapper">
+    <insert id="addAlarm" parameterType="com.sist.back.vo.AlarmVO">
+        INSERT INTO alarm(redirection, message, category, userkey, create_dtm) VALUES (#{redirection}, #{message}, #{category}, #{userkey}, now())
+    </insert>
+
+    <select id="getAlarmForUser" parameterType="String" resultType="com.sist.back.vo.AlarmVO">
+      SELECT * FROM alarm WHERE userkey = #{userkey}
+    </select>
+
+    <delete id="deleteNotifications" parameterType="String">
+      DELETE FROM alarm WHERE message = #{message} and redirection = #{redirection}
+    </delete>
+
+    <delete id="deleteAllAlarms" parameterType="String">
+      DELETE FROM alarm WHERE userkey = #{userkey}
+    </delete>
+</mapper>

@@ -1,0 +1,143 @@
+.PopCateGrid{
+    column-gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 32px;
+}
+
+.userPage{
+    text-align: left !important;
+}
+
+.aspectRatio{
+    aspect-ratio: 1/1;
+    margin: "0";
+    padding: "0";
+}
+        
+@media (min-width: 500px){
+    .PopCateGrid{
+        column-gap: 20px;
+        grid-template-columns: repeat(3,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 800px){
+    .PopCateGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(4,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 1100px){
+    .PopCateGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(5,1fr);
+        row-gap: 32px
+    }
+}
+
+.UserProfileGrid{
+    min-width: 600px;
+    column-gap: auto;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 2fr;
+    row-gap: 32px
+}
+
+.BtnPart{
+    display: flex;
+    flex-direction: row;
+}
+
+.PraiseOrNot{
+    display: flex;
+    flex-direction: column;
+}
+
+.PraiseBtn{
+    width: 125px;
+    height: 40px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 15px;
+    margin-bottom: 2px;
+    font-size: 17px;
+    background-color: #22a222;
+}
+.PraiseBtn:hover{
+    background-color: #44c444;
+}
+.PraiseBtn:active{
+    background-color: #008000;
+}
+
+.DisapproveBtn{
+    width: 125px;
+    height: 40px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 15px;
+    margin-top: 2px;
+    font-size: 17px;
+    background-color: #ee6a30;
+}
+
+.DisapproveBtn:hover{
+    background-color: #ff8c52;
+}
+.DisapproveBtn:active{
+    background-color: #cc490e;
+}
+
+.MenuBtn{
+    margin: auto 0;
+    color: #000000;
+    background-color: none;
+}
+
+.UserPageShip{
+    flex-direction: column !important;
+}
+
+.UserPageDetail{
+    align-items: center !important;
+}
+
+.UserPageGrid{
+    column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    row-gap: 32px
+}
+
+@media (min-width: 600px){
+    .UserPageGrid{
+        column-gap: 20px;
+        grid-template-columns: repeat(3,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 900px){
+    .UserPageGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(4,1fr);
+        row-gap: 32px
+    }
+}
+
+@media (min-width: 1200px){
+    .UserPageGrid{
+        column-gap: 16px;
+        grid-template-columns: repeat(5,1fr);
+        row-gap: 32px
+    }
+}
+
+

@@ -1,0 +1,128 @@
+.teamContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .teamRow {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .teamMember {
+    flex: 1;
+    text-align: center;
+    margin: 0 15px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    padding: 30px 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    background-color: #ffffff;
+    max-width: 320px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .teamMember::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .teamMember:hover::before {
+    opacity: 1;
+  }
+  
+  .teamMember:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+  }
+  
+  .teamPhoto {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 3px solid;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .teamMember:hover .teamPhoto {
+    transform: scale(1.1);
+  }
+  
+  .teamMember1 .teamPhoto {
+    border-color: #ff7e36; /* 파란색 */
+  }
+  
+  .teamMember2 .teamPhoto {
+    border-color: #ff7e36; /* 민트 */
+  }
+  
+  .teamMember3 .teamPhoto {
+    border-color: #ff7e36; /* 연한 분홍 */
+  }
+  
+  .teamMember4 .teamPhoto {
+    border-color: #ff7e36; /* 황토색 */
+  }
+  
+  .teamMember5 .teamPhoto {
+    border-color: #ff7e36; /* 연한 올리브색 */
+  }
+  
+  .teamMember6 .teamPhoto {
+    border-color: #ff7e36; /* 베이지 */
+  }
+  
+  .teamName {
+    font-size: 1.7em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-weight: bold;
+  }
+  
+  .teamRole {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #7f8c8d;
+    font-style: italic;
+  }
+  
+  .teamDescription {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.1em;
+    line-height: 1.5;
+  }
+  
+  .teamDescriptionItem {
+    margin-bottom: 8px;
+    color: #34495e;
+  }
+  
+  @media (max-width: 768px) {
+    .teamRow {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .teamMember {
+      margin-bottom: 30px;
+    }
+  }
+  

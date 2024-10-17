@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.PostMapper">
+
+    <!-- DB 속도 실험용 -->
+    <resultMap id="post_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+    <select id="getPost_simple" resultMap="post_simple" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+    
+    <!-- DB 속도 실험용 -->
+    <resultMap id="adpost_simple" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="townkey" property="townkey" />
+        <result column="userkey" property="userkey" />
+        <result column="categorykey" property="categorykey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+    </resultMap>
+
+    <select id="getAdPost_simple" resultMap="adpost_simple" parameterType="int">
+        SELECT *
+        FROM `post`
+    </select>
+
+
+    <resultMap id="post_image_map" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+    <resultMap id="postMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="dealuserkey" property="dealuserkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+        <collection property="pInfo_list" select="getPInfo_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostInfoVO" />
+    </resultMap>
+
+    <!-- 사용자 post detail에 필요한 정보 -->
+    <resultMap id="pdMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+
+
+    <!-- 게시글 상세 필요 데이터 추가본 -->
+    <resultMap id="user_cell_map" type="com.sist.back.vo.userVO">
+        <id column="userkey" property="userkey"/>
+        <!--a_list 매핑-->
+        <collection property="a_list" ofType="com.sist.back.vo.AddressVO" select="getAddressListByUserKey" column="userkey"/>
+        <!--cell_list 매핑-->
+        <collection property="cell_list" ofType="com.sist.back.vo.PostVO" select="getCellListByUserKey" column="userkey"/>
+        <collection property="m_list" ofType="com.sist.back.vo.MannerVO" select="getMannerListByUserKey" column="userkey"/>
+    </resultMap>
+    <resultMap id="address_town_map" type="com.sist.back.vo.AddressVO">
+        <result column="townkey" property="townkey"/>
+        <association property="tvo" javaType="com.sist.back.vo.TownVO" select="getTownByTownKey" column="townkey"/>
+    </resultMap>
+
+
+
+    <resultMap id="offerMap" type="com.sist.back.vo.OfferVO">
+        <result column="offeruserkey" property="offeruserkey" />
+        <association property="ouvo" select="getUserByOfferUserKey" column="offeruserkey" javaType="com.sist.back.vo.userVO"/>
+    </resultMap>
+
+    <resultMap id="chatroomMap" type="com.sist.back.vo.ChatRoomVO">
+        <result column="buyer_userkey" property="buyer_userkey" />
+        <association property="cuvo" select="getUserByChatUserKey" column="buyer_userkey" javaType="com.sist.back.vo.userVO"/>
+    </resultMap>
+
+    <select id="all" resultType="com.sist.back.vo.PostVO">
+      SELECT * FROM post
+    </select>
+
+    <!-- 1. post 관련 데이터 -->
+    <select id="getPostByPostKey" resultMap="postMap" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getCvoByPostKey" resultType="com.sist.back.vo.categoryVO" parameterType="int">
+        SELECT * FROM `category`
+        WHERE categorykey = #{categorykey}
+    </select>
+    <select id="getUvoByPostKey" resultMap="user_cell_map" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getUvoByDealUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{dealuserkey}
+    </select>
+    <select id="getPImg_listByPostKey" resultType="com.sist.back.vo.PostImgVO" parameterType="int">
+        SELECT * FROM `postimg`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getPostImgThumbnail" parameterType="String" resultType="com.sist.back.vo.PostImgVO">
+        SELECT a.title, a.postkey, a.poststatus, b.imgurl FROM post as a LEFT JOIN postimg as b ON a.postkey = b.postkey where a.postkey = #{postkey} LIMIT 1
+    </select>
+    <select id="getPInfo_listByPostKey" resultType="com.sist.back.vo.PostInfoVO" parameterType="int">
+        SELECT * FROM `post_info`
+        WHERE postkey = #{postkey}
+    </select>
+
+    
+    <select id="getUvoSimple" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
+
+    
+    <!-- 사용자 Post Detail 관련 sql -->
+    <select id="getPostDetailByPostKey" resultMap="pdMap" parameterType="int">
+        SELECT * FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+    
+
+    <!-- 2. town 관련 데이터 -->
+    <select id="getTownByPostKey" resultType="com.sist.back.vo.TownVO" parameterType="int">
+        SELECT * FROM `town`
+        WHERE townkey = (SELECT townkey
+                        FROM `post`
+                        WHERE postkey = #{postkey})
+    </select>
+
+    <!-- 3. offer 관련 데이터 -->
+    <select id="getOfferByPostKey" resultMap="offerMap" parameterType="int">
+        SELECT * FROM `offer`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <select id="getUserByOfferUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{offeruserkey}
+    </select>
+
+    <!-- 4. chatroom 관련 데이터 -->
+    <select id="getChatroomByPostKey" resultMap="chatroomMap" parameterType="int">
+        SELECT * FROM `chatroom`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <select id="getUserByChatUserKey" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{buyer_userkey}
+    </select>
+
+
+
+
+    <!-- 게시글 상세 필요 데이터 추가본 -->
+    <select id="getPostByCategoryKey" resultMap="post_image_map" parameterType="map">
+        SELECT b.*
+        FROM ( SELECT *<!--a.*-->
+               <!-- FROM ( SELECT *
+                      FROM `post`
+                      WHERE poststatus IN (1,2)
+                ) a -->
+               FROM `post`
+               <!-- WHERE a.userkey NOT IN ( SELECT noseeuserkey FROM `nosee` WHERE userkey = #{userkey})
+               AND a.userkey NOT IN (SELECT blockeduserkey FROM `blocked` WHERE userkey = #{userkey})
+               AND a.userkey NOT IN (SELECT userkey FROM `blocked` WHERE blockeduserkey = #{userkey}) -->
+               WHERE userkey NOT IN ( SELECT noseeuserkey FROM `nosee` WHERE userkey = #{userkey})
+               AND userkey NOT IN (SELECT blockeduserkey FROM `blocked` WHERE userkey = #{userkey})
+               AND userkey NOT IN (SELECT userkey FROM `blocked` WHERE blockeduserkey = #{userkey})
+            ) b
+        WHERE b.categorykey = #{categorykey}
+        ORDER BY viewqty DESC
+        LIMIT 15
+    </select>
+    <select id="getCellListByUserKey" resultMap="post_image_map" parameterType="int">
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND poststatus IN (1,2)
+    </select>
+    <select id="getCellListByUserPostKey" resultMap="post_image_map" parameterType="Map">
+        SELECT *
+        FROM `post`
+        WHERE userkey = #{userkey}
+        AND postkey != #{postkey}
+        AND poststatus IN (1,2)
+    </select>
+    <select id="getAddressListByUserKey" resultMap="address_town_map" parameterType="String">
+        SELECT *
+        FROM `address`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="getTownByTownKey" resultType="com.sist.back.vo.TownVO" parameterType="String">
+        SELECT *
+        FROM `town`
+        WHERE townkey = #{townkey}
+    </select>
+    <select id="getMannerListByUserKey" resultType="com.sist.back.vo.MannerVO" parameterType="String">
+        SELECT *
+        FROM `manner`
+        WHERE userkey = #{userkey}
+    </select>
+
+
+    <!-- 5. userreview 관련 데이터 -->
+    <select id="getReviewListByReviewListKey" resultType="com.sist.back.vo.ReviewListVO" parameterType="int">
+        SELECT * FROM `reviewlist`
+        WHERE reviewlistkey = #{reviewlistkey}
+    </select>
+
+    <!-- post 관련 채팅방 갯수, 관심받은 횟수 -->
+    <select id="getLikedQty" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM `wishlist`
+        WHERE postkey = #{postkey}
+    </select>
+    <select id="getChatroomQty" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM `chatroom`
+        WHERE postkey = #{postkey}
+         AND isdeleted = 0
+    </select>
+
+
+    <select id="getLikeCate" resultType="com.sist.back.vo.categoryVO" parameterType="String">
+        SELECT *
+        FROM `interestcategory`
+        WHERE userkey = #{userkey}
+    </select>
+
+    
+    <!-- 조회수 증가 -->
+    <select id="getViewqty" resultType="int" parameterType="int">
+        SELECT viewqty
+        FROM `post`
+        WHERE postkey = #{postkey}
+    </select>
+
+    <update id="incViewqty" parameterType="int">
+        UPDATE `post`
+        SET viewqty = viewqty+1
+        WHERE postkey = #{postkey}
+    </update>
+
+    <insert id="insertRemindPost" parameterType="String">
+        INSERT
+        INTO `post_info`(postkey,isupdate,dtm)
+        VALUES (#{postkey},1,NOW())
+    </insert>
+
+    <update id="remindPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET update_dtm = NOW(), remind_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
+    <update id="unhidPostByPostKey" parameterType="String">
+        UPDATE `post`
+        SET poststatus = '1', update_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+
+    <delete id="delWishlistByKey" parameterType="String">
+        DELETE
+        FROM `wishlist`
+        WHERE wishlistkey = #{likeKey}
+    </delete>
+    <delete id="delInterestcategoryByKey" parameterType="String">
+        DELETE
+        FROM `interestcategory`
+        WHERE autokey = #{likeKey}
+    </delete>
+    <delete id="delKeywordByKey" parameterType="String">
+        DELETE
+        FROM `keyword`
+        WHERE keywordkey = #{likeKey}
+    </delete>
+
+    <insert id="writePost" parameterType="com.sist.back.vo.PostVO" useGeneratedKeys="true" keyProperty="postkey">
+    INSERT INTO `post`
+        (
+        `userkey`,
+        `townkey`,
+        `categorykey`,
+        `title`,
+        `method`,
+        `price`,
+        `lastprice`,
+        `content`,
+        `range`,
+        <if test="hope_place != null and hope_place != ''">
+            `hope_place`,
+        </if>
+        <if test="hope_lati != null and hope_lati != ''">
+            `hope_lati`,
+        </if>
+        <if test="hope_long != null and hope_long != ''">
+            `hope_long`,
+        </if>
+        `canbargain`,
+        `viewqty`,
+        `create_dtm`,
+        `update_dtm`,
+        `delete_dtm`,
+        `remind_dtm`,
+        `dealuserkey`,
+        `deal_dtm`,
+        `userreview`,
+        `userreviewimg`,
+        `userreview_dtm`,
+        `dealuserreview`,
+        `dealuserreviewimg`,
+        `dealuserreview_dtm`,
+        `poststatus`,
+        `isdeleted`,
+        `iscellvisible`,
+        `isbuyvisible`
+        )
+        VALUES
+        (
+        #{userkey},
+        #{townkey},
+        #{categorykey},
+        #{title},
+        #{method},
+        #{price},
+        #{lastprice},
+        #{content},
+        #{range},
+        <if test="hope_place != null and hope_place != ''">
+            #{hope_place},
+        </if>
+        <if test="hope_lati != null and hope_lati != ''">
+            #{hope_lati},
+        </if>
+        <if test="hope_long != null and hope_long != ''">
+            #{hope_long},
+        </if>
+        #{canbargain},
+        #{viewqty},
+        <if test="poststatus == 0">
+            #{create_dtm},
+            #{update_dtm},
+        </if>
+        <if test="poststatus == 1">
+            now(),
+            now(),
+        </if>
+        #{delete_dtm},
+        #{remind_dtm},
+        #{dealuserkey},
+        #{deal_dtm},
+        #{userreview},
+        #{userreviewimg},
+        #{userreview_dtm},
+        #{dealuserreview},
+        #{dealuserreviewimg},
+        #{dealuserreview_dtm},
+        #{poststatus},
+        0,
+        #{iscellvisible},
+        #{isbuyvisible}
+        )
+    </insert>
+
+    <delete id="deletePostImg" parameterType="String">
+        DELETE FROM `postimg`
+         WHERE postkey=#{postkey}
+    </delete>
+
+    <update id="editPost" parameterType="com.sist.back.vo.PostVO">
+    UPDATE `post`
+        SET
+        `townkey` = #{townkey},
+        `categorykey` = #{categorykey},
+        `title` = #{title},
+        `method` = #{method},
+        `price` = #{price},
+        `content` = #{content},
+        `range` = #{range},
+        <if test="hope_place != null and hope_place != '' and hope_place != 'null'">
+            `hope_place` = #{hope_place},
+        </if>
+        <if test="hope_lati != null and hope_lati != '' and hope_lati != 'null'">
+            `hope_lati` = #{hope_lati},
+        </if>
+        <if test="hope_long != null and hope_long != '' and hope_long != 'null'">
+            `hope_long` = #{hope_long},
+        </if>
+        `canbargain` = #{canbargain},
+        <if test="isPostPage = 1 and poststatus != 0">
+        `create_dtm` = now(),
+        </if>
+        `update_dtm` = now(),
+        <if test="isPostPage = 0">
+        `remind_dtm` = #{remind_dtm},
+        </if>
+        <if test="isPostPage = 1 and poststatus != 0">
+        `remind_dtm` = now(),
+        </if>
+        `dealuserkey` = #{dealuserkey},
+        `deal_dtm` = #{deal_dtm},
+        `userreview` = #{userreview},
+        `userreviewimg` = #{userreviewimg},
+        `userreview_dtm` = #{userreview_dtm},
+        `dealuserreview` = #{dealuserreview},
+        `dealuserreviewimg` = #{dealuserreviewimg},
+        `dealuserreview_dtm` = #{dealuserreview_dtm},
+        `poststatus` = #{poststatus},
+        `iscellvisible` = #{iscellvisible},
+        `isbuyvisible` = #{isbuyvisible}
+        WHERE `postkey` = #{postkey}
+    </update>
+
+    <!-- 관리자 게시글 현황 정보 카운트 -->
+    <select id="countpostForAdmin" resultType="com.sist.back.vo.PostCountVO">
+    SELECT 
+        COUNT(*) AS all_posts, -- 전체 게시글 수
+        COUNT(CASE WHEN poststatus = 0 AND isdeleted = 0 THEN 1 END) AS tem_save_posts, 
+        COUNT(CASE WHEN poststatus = 1 AND isdeleted = 0 THEN 1 END) AS sale_posts, 
+        COUNT(CASE WHEN poststatus = 2 AND isdeleted = 0 THEN 1 END) AS saleing_posts, 
+        COUNT(CASE WHEN poststatus = 3 AND isdeleted = 0 THEN 1 END) AS saled_posts, 
+        COUNT(CASE WHEN poststatus = 4 AND isdeleted = 0 THEN 1 END) AS hide_posts, 
+        COUNT(CASE WHEN isdeleted = 1 THEN 1 END) AS del_posts 
+    FROM post;
+    </select>
+     <!-- 여러 상태를 IN 조건으로 조회 -->
+    <select id="findAllByPoststatusIn" parameterType="list" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus IN
+        <foreach item="status" collection="list" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <!-- 특정 상태를 조회 -->
+    <select id="findByPoststatus" parameterType="int" resultType="com.sist.back.vo.PostVO">
+        SELECT * FROM post WHERE poststatus = #{poststatus}
+    </select>
+
+    <update id="updatePostStatus" parameterType="String">
+        UPDATE post SET poststatus = #{postStatus}, dealuserkey = #{dealuserkey}, deal_dtm = now() where postkey = #{postkey}
+    </update>
+
+    <!-- 게시글 숨기기 -->
+    <update id="hidePost" parameterType="String">
+        UPDATE `post`
+        SET poststatus = 4,
+        update_dtm = NOW()
+        WHERE postkey = #{postkey}
+    </update>
+    
+    <!-- 게시글 삭제 -->
+    <update id="checkPostDel" parameterType="String">
+        UPDATE `post`
+        SET isdeleted = 1,
+        update_dtm = now(),
+        delete_dtm = now()
+        WHERE postkey = #{postkey}
+    </update>
+
+    <!--
+        민호
+    -->
+    <!-- /ad -->
+    <resultMap id="getTop4Map" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="getTop4" resultMap="getTop4Map">
+        SELECT *
+        FROM `post`
+        WHERE isdeleted = 0
+        AND poststatus IN (1, 2)
+        ORDER BY viewqty DESC
+        LIMIT 4
+    </select>
+
+    <!-- /ad/post -->
+    <!-- total -->
+    <select id="searchpostTotal" resultType="int" parameterType="map">
+      SELECT count(*) FROM post p
+        LEFT JOIN user u ON u.userkey = p.userkey
+        LEFT JOIN town t ON t.townkey = p.townkey
+        WHERE 1 = 1
+        <!-- 검색분류 -->
+        <if test="searchCategory != null and searchCategory != '' and searchCategory != 'null' and searchCategoryText != null and searchCategoryText != ''">
+            <if test="searchCategory == 'title'">
+                AND p.title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'postkey'">
+                AND p.postkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'userkey'">
+                AND p.userkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'id'">
+                AND u.id = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'nickname'">
+                AND u.nickname = #{searchCategoryText}
+            </if>
+        </if>
+        <if test="region1 != null and region1 != '' and region1 != 'null'">
+            AND t.region1 = #{region1}
+        </if>
+        <if test="region2 != null and region2 != '' and region2 != 'null'">
+            AND t.region2 = #{region2}
+        </if>
+        <if test="region3 != null and region3 != '' and region3 != 'null'">
+            AND t.region3 = #{region3}
+        </if>
+        <!-- 게시글 분류 -->
+        <if test="categorykey != null and categorykey != '' and categorykey != 'null'">
+            AND p.categorykey = #{categorykey}
+        </if>
+        <!-- 판매상태 -->
+        <if test="poststatus != 'all'">
+            <if test="poststatus == 5">
+                AND p.isdeleted = 1
+            </if>
+            <if test="poststatus != 5">
+                AND p.poststatus = #{poststatus}
+                AND p.isdeleted = 0
+            </if>
+        </if>
+        <!-- 거래방식 -->
+        <if test="method != 'all'">
+            AND p.method = #{method}
+        </if>
+        <!-- 상품 가격 -->
+        <if test="price == 'price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.price &lt;= #{maxPrice}
+            </if>
+        </if>
+        <if test="price == 'lastprice'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.lastprice &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.lastprice &lt;= #{maxPrice}
+            </if>
+        </if>
+        <!-- 흥정 가능 여부 -->
+        <if test="canbargain != 'all'">
+            AND p.canbargain = #{canbargain}
+        </if>
+        <!-- 게시글 생성일 -->
+        <if test="dtm == 'create_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.create_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.create_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 게시글 삭제일 -->
+        <if test="dtm == 'delete_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.delete_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.delete_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 거래완료 일자 -->
+        <if test="dtm == 'deal_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.deal_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.deal_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+    </select>
+
+    <!-- search -->
+    <resultMap id="searchpostMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="dealuserkey" property="dealuserkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoSimple" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="duvo" select="getUvoByDealUserKey" column="dealuserkey" javaType="com.sist.back.vo.userVO"/>
+        <!-- <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>-->
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" /> 
+    </resultMap>
+
+    <select id="searchpost" resultMap="searchpostMap" parameterType="map">
+        SELECT x.*
+      FROM ( SELECT p.*, row_number() over (order by 
+        <if test="sort == 'recent'">
+            p.postkey 
+        </if>
+        <if test="sort == 'popular'">
+            p.viewqty 
+        </if>
+        DESC) rnum FROM post p
+        LEFT JOIN user u ON u.userkey = p.userkey
+        LEFT JOIN town t ON t.townkey = p.townkey
+        WHERE 1 = 1
+        <!-- 검색분류 -->
+        <if test="searchCategory != null and searchCategory != '' and searchCategory != 'null' and searchCategoryText != null and searchCategoryText != ''">
+            <if test="searchCategory == 'title'">
+                AND p.title LIKE CONCAT('%', #{searchCategoryText}, '%')
+            </if>
+            <if test="searchCategory == 'postkey'">
+                AND p.postkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'userkey'">
+                AND p.userkey = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'id'">
+                AND u.id = #{searchCategoryText}
+            </if>
+            <if test="searchCategory == 'nickname'">
+                AND u.nickname = #{searchCategoryText}
+            </if>
+        </if>
+        <if test="region1 != null and region1 != '' and region1 != 'null'">
+            AND t.region1 = #{region1}
+        </if>
+        <if test="region2 != null and region2 != '' and region2 != 'null'">
+            AND t.region2 = #{region2}
+        </if>
+        <if test="region3 != null and region3 != '' and region3 != 'null'">
+            AND t.region3 = #{region3}
+        </if>
+        <!-- 게시글 분류 -->
+        <if test="categorykey != null and categorykey != '' and categorykey != 'null'">
+            AND p.categorykey = #{categorykey}
+        </if>
+       <!-- 판매상태 -->
+        <if test="poststatus != 'all'">
+            <if test="poststatus == 5">
+                AND p.isdeleted = 1
+            </if>
+            <if test="poststatus != 5">
+                AND p.poststatus = #{poststatus}
+                AND p.isdeleted = 0
+            </if>
+        </if>
+        <!-- 거래방식 -->
+        <if test="method != 'all'">
+            AND p.method = #{method}
+        </if>
+        <!-- 상품 가격 -->
+        <if test="price == 'price'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.price &lt;= #{maxPrice}
+            </if>
+        </if>
+        <if test="price == 'lastprice'">
+            <if test="minPrice != null and minPrice != ''">
+                AND p.lastprice &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice != ''">
+                AND p.lastprice &lt;= #{maxPrice}
+            </if>
+        </if>
+        <!-- 흥정 가능 여부 -->
+        <if test="canbargain != 'all'">
+            AND p.canbargain = #{canbargain}
+        </if>
+        <!-- 게시글 생성일 -->
+        <if test="dtm == 'create_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.create_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.create_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 게시글 삭제일 -->
+        <if test="dtm == 'delete_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.delete_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.delete_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        <!-- 거래완료 일자 -->
+        <if test="dtm == 'deal_dtm'">
+            <if test="dtm_from != null and dtm_from != ''">
+                AND p.deal_dtm &gt;= #{dtm_from}
+            </if>
+            <if test="dtm_to != null and dtm_to != ''">
+                AND p.deal_dtm &lt;= #{dtm_to}
+            </if>
+        </if>
+        ) x
+    WHERE x.rnum BETWEEN #{begin} and #{end}
+    </select>
+
+    <!-- / -->
+    <resultMap id="mainMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="main" resultMap="mainMap" parameterType="String">
+        select p.* from `post` p
+         LEFT JOIN `town` t ON p.townkey = t.townkey
+         where p.isdeleted = 0 AND p.poststatus = 1
+          <if test ="param == 'free'">
+            AND p.method = 1 AND p.price = 0
+          </if>
+          <if test="param != 'free'">
+            AND p.categorykey = #{param}
+          </if>
+          <if test="region1 != 'undefined' and region2 != 'undefined'">
+            AND t.region1 = #{region1} AND t.region2 = #{region2}
+          </if>
+          ORDER BY p.remind_dtm DESC
+          limit 10
+    </select>
+
+    <!-- /post -->
+    <resultMap id="searchMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="categorykey" property="categorykey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="cvo" select="getCvoByPostKey" column="categorykey" javaType="com.sist.back.vo.categoryVO"/>
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoByPostKey" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <association property="likedqty" select="getLikedQty" column="postkey" javaType="int"/>
+        <association property="chatroomqty" select="getChatroomQty" column="postkey" javaType="int"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="search" resultMap="searchMap" parameterType="map">
+        SELECT * FROM 
+        (SELECT p.* FROM `post` p
+          JOIN `town` t ON t.townkey = p.townkey
+          JOIN `category` c ON c.categorykey = p.categorykey
+          <!-- 게시글미노출 -->
+         <if test="userkey != null and userkey != ''">
+            LEFT JOIN nosee n ON n.userkey = #{userkey} AND n.noseeuserkey = p.userkey
+            LEFT JOIN blocked b ON b.userkey = #{userkey} AND b.blockeduserkey = p.userkey
+            LEFT JOIN noseepost np ON np.userkey = #{userkey} AND np.postkey = p.postkey
+        </if>
+         WHERE p.isdeleted = 0
+         <if test="userkey != null and userkey != ''">
+            AND n.noseeuserkey IS NULL
+            AND b.blockeduserkey IS NULL
+            AND np.postkey IS NULL
+         </if>
+         <if test="loc1 != null and loc1 != ''">
+           AND t.region1 = #{loc1}
+         </if>
+        <if test="loc2 != null and loc2.length > 0 and loc2[0] != 'all'">
+            AND (
+                <foreach item="item" collection="loc2" separator=" OR ">
+                t.region2 = #{item}
+                </foreach>
+            )
+        </if>
+           AND p.poststatus IN (1, 2, 3)
+        <if test="onsale != null and onsale != '' and onsale == 'true'">
+           AND p.poststatus = 1
+        </if>
+        <if test="search != null and search != ''">
+            AND (p.title LIKE CONCAT('%', #{search}, '%') OR c.categoryname LIKE CONCAT('%', #{search}, '%'))
+        </if>
+        <if test="category != null and category != ''">
+            AND p.categorykey = #{category}
+        </if>
+        <if test="minPrice != null and minPrice != ''">
+            AND p.price <![CDATA[>=]]> #{minPrice}
+        </if>
+        <if test="maxPrice != null and maxPrice != ''">
+            AND p.price <![CDATA[<=]]> #{maxPrice}
+        </if>
+        ) x
+        WHERE 1 = 1
+        <if test="lastPostKey != null and lastPostKey != '0'">
+            AND x.postkey <![CDATA[<]]> #{lastPostKey}
+        </if>
+        <if test="sort != null and sort != ''">
+            ORDER BY 
+            <if test="sort == 'recent'">
+                 CASE WHEN x.remind_dtm IS NULL 
+                      THEN x.create_dtm 
+                      ELSE x.remind_dtm
+                  END DESC,
+                x.create_dtm DESC
+            </if>
+            <if test="sort == 'popular'">
+                x.viewqty DESC
+            </if>
+        </if>
+        limit #{howManyPost}
+    </select>
+
+    <!-- 임시저장 찾기 -->
+    <resultMap id="searchTempMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="searchTemp" resultMap="searchTempMap" parameterType="String">
+        SELECT * FROM post 
+         WHERE userkey = #{userkey} AND isdeleted = 0 AND poststatus = 0
+    </select>
+
+    <!-- 게시글 TOP 10 -->
+    <resultMap id="postTop10StatisticMap" type="com.sist.back.vo.PostVO">
+        <id column="postkey" property="postkey" />
+        <result column="userkey" property="userkey" />
+        <result column="townkey" property="townkey" />
+        <association property="townVO" select="com.sist.back.mapper.TownMapper.searchTownByKey" column="townkey" javaType="com.sist.back.vo.TownVO"/>
+        <association property="uvo" select="getUvoPostTop10StatisticMap" column="userkey" javaType="com.sist.back.vo.userVO"/>
+        <collection property="pImg_list" select="getPImg_listByPostKey" column="postkey" ofType="com.sist.back.vo.PostImgVO" />
+    </resultMap>
+    <select id="getUvoPostTop10StatisticMap" resultType="com.sist.back.vo.userVO" parameterType="int">
+        SELECT * FROM `user`
+        WHERE userkey = #{userkey}
+    </select>
+    <select id="postTop10Statistic" resultMap="postTop10StatisticMap" parameterType="String">
+      select p.*, 
+	   COUNT(CASE WHEN w.wishlistkey is not null THEN 1 END) likedqty,
+       COUNT(CASE WHEN c.chatroomkey is not null THEN 1 END) chatroomqty
+        FROM post p
+        LEFT JOIN wishlist w on p.postkey = w.postkey
+        LEFT JOIN chatroom c on p.postkey = c.postkey
+        WHERE p.isdeleted = 0
+        <!-- 오늘 -->
+        <if test="type == 1">
+            AND DATE(p.create_dtm) = DATE(now())
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
+            AND (DATE(w.create_dtm) = DATE(NOW()) or w.create_dtm is null)
+            </if>
+            <if test="dateType == 3">
+            AND (DATE(c.create_dtm) = DATE(NOW()) or c.create_dtm is null)
+            </if>
+        </if>
+        <!-- 1주 -->
+        <if test="type == 2">
+            AND (WEEK(p.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR p.create_dtm is null)
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
+            AND (WEEK(w.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR w.create_dtm is null)
+            </if>
+            <if test="dateType == 3">
+            AND (WEEK(c.create_dtm, 1) BETWEEN WEEK(DATE_SUB(NOW(), INTERVAL 1 WEEK), 1) AND WEEK(NOW(), 1) OR c.create_dtm is null)
+            </if>
+        </if>
+        <!-- 1달 -->
+        <if test="type == 3">
+            and (p.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR p.create_dtm IS NULL)
+            <if test="dateType == 1">
+            </if>
+            <if test="dateType == 2">
+            and (w.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR w.create_dtm IS NULL)
+            </if>
+            <if test="dateType == 3">
+            and (c.create_dtm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() OR c.create_dtm IS NULL)
+            </if>
+        </if>
+        GROUP BY p.postkey
+        <if test="dateType == 1">
+        order by p.viewqty desc
+        </if>
+        <if test="dateType == 2">
+        order by likedqty desc
+        </if>
+        <if test="dateType == 3">
+        order by chatroomqty desc
+        </if>
+        LIMIT 10
+    </select>
+    <!-- 
+        민호 끝 
+    -->
+</mapper>

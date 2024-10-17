@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.PostimgMapper">
+
+    <!-- postimgVO에 대한 ResultMap 정의 -->
+    <resultMap id="postimgVOResultMap" type="com.sist.back.vo.PostImgVO">
+        <id property="postimgkey" column="postimgkey"/>
+        <result property="imgurl" column="imgurl"/>
+        <result property="postkey" column="postkey"/>
+    </resultMap>
+
+    <!-- ResultMap을 사용하는 select 문 -->
+    <select id="all" resultMap="postimgVOResultMap">
+        SELECT imgurl, postimgkey, postkey FROM postimg
+    </select>
+
+    <insert id="addPostImg" parameterType="com.sist.back.vo.PostImgVO">
+        INSERT INTO `postimg`
+        (
+            postkey,
+            imgurl
+        ) VALUES (
+            #{postkey},
+            #{imgurl}
+        )
+    </insert>
+</mapper>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.BoardMapper">
+  
+    <resultMap id="map1" type="com.sist.back.vo.BoardVO">
+        <id property="boardkey" column="boardkey"/>
+        <result property="userkey" column="userkey"/>
+        <result property="categorykey" column="categorykey"/>
+        <result property="title" column="title"/>
+        <result property="create_dtm" column="create_dtm"/>
+    </resultMap>
+
+    <!-- 전체 반환 -->
+    <select id="all" resultType="com.sist.back.vo.BoardVO">
+        SELECT * FROM board
+    </select>
+
+    <!--총 게시물의 수를 반환-->
+    <select id="count" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM board
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                AND categorykey IN (
+                    SELECT `key` 
+                    FROM key_table 
+                    WHERE value = #{categoryName} 
+                    AND `table` = 'board'
+                    AND `column` = 'categorykey'
+                )
+            </if>
+            AND isdeleted = 0
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm BETWEEN #{create_start_date} AND #{create_end_date}
+            </if>
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm <![CDATA[>=]]> #{create_start_date}
+            </if>
+            <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                AND create_dtm <![CDATA[<=]]> #{create_end_date}
+            </if>
+        </where>
+    </select>
+
+    <!--게시물 목록 반환-->
+    <select id="search" resultMap="map1" parameterType="map">
+        SELECT * FROM (
+            SELECT @RN:=@RN+1 AS rnum, a.* FROM (
+                SELECT b.*, k.value AS categoryValue 
+                FROM board b
+                LEFT JOIN key_table k ON b.categorykey = k.key
+                    AND k.`table` = 'board'
+                    AND k.`column` = 'categorykey'
+                <where>
+                    <if test="title != null and title != ''">
+                        b.title LIKE CONCAT('%', #{title}, '%')
+                    </if>
+                    <if test="categoryName != null and categoryName != ''">
+                        AND categorykey IN (
+                            SELECT `key` 
+                            FROM key_table 
+                            WHERE value = #{categoryName} 
+                            AND `table` = 'board'
+                            AND `column` = 'categorykey'
+                        )
+                    </if>
+                    AND b.isdeleted = 0
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm BETWEEN #{create_start_date} AND #{create_end_date}
+                    </if>
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm <![CDATA[>=]]> #{create_start_date}
+                    </if>
+                    <if test="create_start_date != null and create_end_date != null and create_start_date != '' and create_end_date != ''">
+                        AND create_dtm <![CDATA[<=]]> #{create_end_date}
+                    </if>
+                </where>
+                ORDER BY b.boardkey DESC
+            ) a, (SELECT @RN:=0) b
+        ) c 
+        WHERE c.rnum BETWEEN #{begin} AND #{end}
+    </select>
+
+    <update id="boardAdd" parameterType="com.sist.back.vo.BoardVO">
+        UPDATE board
+        SET userkey = #{userkey}, townkey = #{townkey}, categorykey = #{categorykey}, title = #{title}, content = #{content}, viewqty = 0, likeqty = 0, create_dtm = NOW(), isdeleted = 0
+        WHERE boardkey = #{boardkey}
+    </update>
+
+    <insert id="emptyAdd" useGeneratedKeys="true" keyProperty="boardkey">
+        INSERT INTO board(userkey, townkey, viewqty, likeqty, create_dtm, isdeleted)
+        VALUES(#{userkey}, #{townkey}, 0, 0, NOW(), 0)
+    </insert>
+
+    <delete id="deleteLatest" parameterType="String">
+        DELETE b FROM board b
+        JOIN ( SELECT boardkey FROM board WHERE userkey = #{userkey} ORDER BY create_dtm DESC LIMIT 1)
+        AS subquery ON b.boardkey = subquery.boardkey
+    </delete>
+
+
+	<!-- 원글보기 -->
+	<select id="getBbs" parameterType="String" resultMap="map1">
+		SELECT * FROM board
+		WHERE boardkey = #{boardkey}
+	</select>
+	
+	<!-- 원글 수정 -->
+    <update id="edit" parameterType="com.sist.back.vo.BoardVO">
+        UPDATE board
+        SET title = #{title}, content = #{content}, categorykey = #{categorykey}, update_dtm = NOW()
+        WHERE boardkey = #{boardkey}
+    </update>
+
+    <!-- 특정 categoryname으로 key 값을 조회 -->
+    <select id="changeCategoryname" parameterType="String" resultType="String">
+        SELECT `key` FROM key_table
+        WHERE `value` = #{categoryname} AND `table` = 'board' AND `column` = 'categorykey'
+    </select>
+	
+	<!-- 원글 삭제 -->
+	<update id="del" parameterType="String">
+		Update board
+		SET isdeleted = 1, delete_dtm = NOW()
+		WHERE boardkey = #{boardkey}
+	</update>
+    
+    <!-- 조회수 증가 -->
+    <select id="getHit" resultType="int" parameterType="int">
+        SELECT viewqty
+        FROM board
+        WHERE boardkey = #{boardkey}
+    </select>
+    <update id="incHit" parameterType="int">
+        UPDATE board
+        SET viewqty = viewqty + 1
+        WHERE boardkey = #{boardkey}
+    </update>
+
+
+    <!-- ######################게시판 카테고리 관리###################### -->
+    <resultMap id="map2" type="com.sist.back.vo.KeyTableVO">
+        <result property="key" column="categorykey"/>
+        <result property="value" column="categoryname"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <!-- 전체 게시판 카테고리 리스트 -->
+    <select id="getAllBcList" resultType="com.sist.back.vo.KeyTableVO">
+        SELECT k.`key`, k.`value`, COUNT(b.categorykey) AS count
+        FROM `key_table` k LEFT JOIN `board` b ON k.`key` = b.`categorykey`
+        WHERE k.`table` = 'board' AND k.`column` = 'categorykey' AND k.isdeleted = 0
+        GROUP BY k.`key`, k.`value`
+    </select>
+
+    <!-- 특정 게시판 카테고리 추출 -->
+    <select id="getBc" parameterType="String" resultType="String">
+        SELECT k.value
+        FROM board b
+        JOIN key_table k ON b.categorykey = k.key
+        WHERE b.boardkey = #{boardkey}
+    </select>
+
+    <!-- 게시판 카테고리 추가 -->
+    <insert id="addBoardCategory" parameterType="String">
+		INSERT INTO key_table (`table`, `column`, `key`, `value`, isdeleted)
+        VALUES ('board', 
+                'categorykey', 
+                (SELECT max + 1 FROM (SELECT IFNULL(MAX(`key`), 0) AS max
+                FROM key_table
+                WHERE `table` = 'board' AND `column` = 'categorykey') AS a), 
+                #{value}, 0)
+	</insert>
+
+    <!-- 게시판 카테고리 수정 -->
+    <update id="editBoardCategory" parameterType="com.sist.back.vo.KeyTableVO">
+		UPDATE key_table
+        SET value = #{value}
+        WHERE `key` = #{key}
+	</update>
+
+    <!-- 게시판 카테고리 삭제 -->
+    <update id="delBoardCategory1" parameterType="String">
+        UPDATE key_table
+        SET isdeleted = 1
+        WHERE `value` = #{value}
+    </update>
+
+    <!-- 삭제된 카테고리에 해당하는 게시물 작세 -->
+    <update id="delBoardCategory2" parameterType="String">
+        UPDATE board
+        SET isdeleted = 1, delete_dtm = NOW()
+        WHERE categorykey = (SELECT `key` FROM key_table WHERE `value` = #{value})
+        AND isdeleted = 0
+    </update>
+
+    <!-- 사용자 게시글 목록 -->
+   <select id="userBbsList" resultType="com.sist.back.vo.BoardVO" parameterType="map">
+        SELECT x.*
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY boardkey DESC) rnum
+            FROM board
+            <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+            </where>
+        ) x
+        WHERE x.rnum BETWEEN #{begin} AND #{end}
+   </select>
+
+   <!-- 사용자 게시글 갯수 반환 -->
+   <select id="userBbsCount" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM board
+        <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+        </where>
+   </select>
+
+   <!-- 사용자 공지사항,이벤트 검색 -->
+   <select id="searchForNotice" parameterType="map" resultType="com.sist.back.vo.BoardVO">
+        SELECT x.*
+        FROM (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY boardkey DESC) rnum
+            FROM board
+            <where>
+                isdeleted = 0
+                <if test="categorykey != null">
+                    AND categorykey = #{categorykey}
+                </if>
+                <if test="title != null">
+                    AND title LIKE CONCAT('%', #{title}, '%')
+                </if>
+            </where>
+        ) x
+        WHERE x.rnum BETWEEN #{begin} AND #{end}
+   </select>
+
+    <!-- 사용자 공지사항, 이벤트 카운트 -->
+    <select id="searchForNoticeCount" parameterType="map" >
+        SELECT COALESCE(COUNT(*), 0) FROM board
+        <where>
+            isdeleted = 0
+            <if test="categorykey != null">
+                AND categorykey = #{categorykey}
+            </if>
+            <if test="title != null">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 오늘 날짜와 같은 글 수 반환 -->
+    <select id="todayCount" resultType="int">
+        SELECT COUNT(*)
+        FROM board b
+        WHERE b.isdeleted = 0
+        AND DATE(b.create_dtm) = CURRENT_DATE()
+    </select>
+
+    <!-- 오늘 날짜와 같은 글 중 카테고리 따른 수 반환 -->
+    <select id="selectTodayCount" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM board b
+        WHERE b.isdeleted = 0
+        AND b.categorykey = #{categorykey}
+        AND DATE(b.create_dtm) = CURRENT_DATE()
+    </select>
+
+</mapper>

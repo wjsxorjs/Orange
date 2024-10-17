@@ -1,0 +1,172 @@
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .faq-title {
+    font-size: 1.5em;
+    color: #333;
+    /*text-align: center;*/
+    margin-bottom: 30px;
+  }
+  
+  .faq-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .faq-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    cursor: pointer;
+  }
+  
+  .faq-item:last-child {
+    border-bottom: none;
+  }
+  
+  .faq-question {
+    font-size: 1.1em;
+    /*font-weight: bold;*/
+    color: #000;
+    transition: color 0.3s ease;
+  }
+  
+  .faq-question:hover {
+    color: #ff6f61;
+  }
+  
+  .faq-answer {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #666;
+    line-height: 1.5;
+    transition: max-height 0.3s ease;
+  }
+  
+  .faq-answer::before {
+    content: "답변: ";
+    font-weight: bold;
+  }
+  .help-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+  }
+  
+  .help-section h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .inquiry-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+    background-color: #f5f5f5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .inquiry-button:hover {
+    background-color: #e0e0e0;
+  }
+  /* 페이지 제목과 선 스타일 */
+.title-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .page-title {
+    font-size: 1.3em;
+    color: #333;
+  }
+  
+  .divider {
+    border: none;
+    border-top: 2px solid #e0e0e0;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+ 
+  .editor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  
+    justify-content: center; 
+  }
+  
+  /* 인풋 태그 스타일 */
+  .centered-input {
+    width: 100%;
+    max-width: 800px;
+    height: 40px;
+    padding: 10px;
+    font-size: 1.1em;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
+  }
+  
+  /* 클릭 시 테두리 주황색 */
+  .centered-input:focus {
+    outline: none;
+    border-color: #ff6f61;
+  }
+  
+
+.quill-wrapper {
+    display: flex;
+    justify-content: center;  
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;  
+    margin-bottom: 50px;  /* 에디터와 버튼 사이 간격 추가 */
+}
+  .quill-editor {
+    width: 100%; 
+    max-width: 800px;  
+    height: 400px; 
+  }
+  
+  
+  /* 문의하기 버튼 스타일 */
+  .inquiry-button2 {
+    display: block; 
+    margin: 0 auto; 
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    background-color: #ff6f61;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; 
+    max-width: 800px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .inquiry-button2:hover {
+    background-color: #e65c50; 
+  }
+  
+  /* 가운데 정렬 */
+  .centered-button {
+    align-self: center;
+  }
+  

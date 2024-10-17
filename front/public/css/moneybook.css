@@ -1,0 +1,100 @@
+.mbModal .css-ypiqx9-MuiDialogContent-root{
+    padding: 20px 0;
+    background-color: #fff0d0;
+}
+
+.mbModal .MuiPaper-root{
+    border-radius: 20px;
+    width: 450px;
+    min-width: 450px;
+    max-width: 450px;
+}
+.mbDatePicker{
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.mbDatePicker .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input{
+    height: 0.5em !important;
+    font-size: 15px !important;
+}
+
+
+.moneybookBody{
+    margin: 0 auto;
+    width: 90%;
+}
+
+
+.pfp_txt p{
+    margin-bottom: 5px;
+}
+
+.datePicker{
+    width: fit-content;
+}
+
+
+.pfp_img {
+    margin-left: auto;
+    width: 100px;
+}
+.pfp_img img{
+    width: 100px;
+}
+
+
+.titleRow .txt{
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-bottom: none;
+}
+
+.titleRow .title{
+    padding: 0;
+}
+
+.contentRow .txt.title{
+    font-size: 17px;
+    border-bottom: none;
+}
+.contentRow .txt{
+    font-size: 17px;
+    border-bottom: none;
+}
+
+.toRight{
+    text-align: right !important;
+}
+
+.userCard{
+    width: 90% !important;
+    min-width: 90% !important;
+    max-width: 90% !important;
+    margin: 15px auto 10px auto !important;
+}
+
+.neighborCard{
+    width: 90% !important;
+    min-width: 90% !important;
+    max-width: 90% !important;
+    margin: 5px auto !important;
+}
+
+.closeMbBtn{
+    background-color: #228822;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    display: block !important;
+    cursor: pointer;
+}
+
+.closeMbBtn:hover{
+    background-color: #44aa44;
+}
+.closeMbBtn:active{
+    background-color: #006600;
+}

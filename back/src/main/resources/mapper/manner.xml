@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.MannerMapper">
+    <!-- 매너 목록 -->
+    <select id="getManner" parameterType="String" resultType="com.sist.back.vo.ReviewListVO">
+      SELECT MIN(r.reviewlistkey) AS reviewlistkey, MIN(r.preference) AS preference, r.review,
+            COUNT(CASE WHEN r.preference IN (0, 3) THEN 1 END) + COUNT(CASE WHEN r.preference IN (1, 2, 4, 5) THEN 1 END) AS count
+      FROM manner m
+      JOIN reviewlist r ON m.reviewlistkey = r.reviewlistkey
+      WHERE m.userkey = #{userkey}
+      GROUP BY r.review
+      ORDER BY MIN(r.reviewlistkey)
+  </select>
+
+  <select id="getPraiseList" resultType="com.sist.back.vo.ReviewListVO">
+    SELECT *
+    FROM `reviewlist`
+    WHERE preference = 2
+  </select>
+
+  <insert id="praiseUser" parameterType="Map">
+    INSERT
+    INTO `manner`(userkey, reviewlistkey,estimateuserkey,ismanner,chatordeal,create_dtm,isdeleted)
+    VALUES(#{userkey},#{listKey},#{estimateUser},1,0,NOW(),0)
+  </insert>
+
+  <select id="getDisapproveList" resultType="com.sist.back.vo.ReviewListVO">
+    SELECT *
+    FROM `reviewlist`
+    WHERE preference = 0
+  </select>
+
+  <insert id="disapproveUser" parameterType="Map">
+    INSERT
+    INTO `manner`(userkey, reviewlistkey,estimateuserkey,ismanner,chatordeal,create_dtm,isdeleted)
+    VALUES(#{userkey},#{listKey},#{estimateUser},0,0,NOW(),0)
+  </insert>
+
+  <!-- 매너온도 user테이블에 저장 -->
+  <update id="setMannerTemp" parameterType="String">
+    UPDATE user u
+    LEFT JOIN ( <!-- manner테이블에 userkey가 없는 경우도 outer -->
+        SELECT 
+            userkey,
+            COALESCE(SUM(CASE WHEN ismanner = 1 THEN 0.5 ELSE -0.5 END), 0) + 36.5 AS mt <!-- COALESCE(SUM(...), 0): sum이 null이면 0 반환 -->
+        FROM manner
+        GROUP BY userkey
+    ) m ON u.userkey = m.userkey
+    SET u.mannertemp = COALESCE(m.mt, 36.5)
+    WHERE u.userkey = #{userkey};
+  </update>
+
+</mapper>

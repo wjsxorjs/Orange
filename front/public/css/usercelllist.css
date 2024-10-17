@@ -1,0 +1,34 @@
+.cellListArticle{
+    background-color: #fafafa;
+    border: 5px ridge #ef7373;
+    width: 200px;
+    height: auto;
+    margin: 5px 15px;
+}
+
+.cellListArticle .thumbnail{
+    width: 100%;
+    height: 250px;
+}
+
+.cellListArticle .firstRow{
+    text-align: center;
+}
+
+.cellListArticle .firstRow .title{
+    padding: 5px;
+    font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cellListArticle .secondRow{
+    display: flex;
+    justify-content: space-around;
+}
+
+.cellListArticle .secondRow .price{
+    color: #229922;
+    font-weight: bold;
+}

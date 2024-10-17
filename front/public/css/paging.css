@@ -1,0 +1,29 @@
+
+/* mPaginate */
+.mPaginate { margin:16px 0 0; text-align:center; }
+.mPaginate li a,
+.mPaginate strong { display:inline-block; width:24px; height:24px; font-size:14px; line-height:24px; color:#444b59; text-decoration:none; }
+.mPaginate ol,
+.mPaginate li { display:inline-block; margin:0 4px; font-size:0; line-height:0; vertical-align:middle; }
+.mPaginate a:hover { background-color:#e1e8f9; }
+.mPaginate a:active,
+.mPaginate a:focus,
+.mPaginate strong { color:#fff; background-color:#ff7500; }
+.mPaginate .prev,
+.mPaginate .next,
+.mPaginate .first,
+.mPaginate .last { overflow:hidden; display:inline-block; width:24px; height:24px; padding:0; vertical-align:middle; font-size:0; line-height:0; text-align:center; border:1px solid #d6dae1; background-color:#fff; box-sizing:border-box; }
+.mPaginate .prev { margin:0 4px 0 0; }
+.mPaginate .next { margin:0 0 0 4px; }
+.mPaginate .prev:before,
+.mPaginate .next:before,
+.mPaginate .first:before,
+.mPaginate .last:before { content:""; display:inline-block; width:4px; height:4px; vertical-align:middle; border-left:1px solid #444b59; border-bottom:1px solid #444b59; }
+.mPaginate .prev:before { margin:9px 0 0 2px; -webkit-transform:rotate(45deg); transform:rotate(45deg); }
+.mPaginate .next:before { margin:9px 2px 0 0; -webkit-transform:rotate(-135deg); transform:rotate(-135deg); }
+.mPaginate .first:before { margin:6px 0 0; -webkit-transform:rotate(45deg); transform:rotate(45deg); }
+.mPaginate .last:before { margin:6px 0 0; -webkit-transform:rotate(-135deg); transform:rotate(-135deg); }
+.mPaginate .first:after,
+.mPaginate .last:after { content:""; display:inline-block; width:1px; height:11px; margin:3px 0 0; vertical-align:middle; background-color:#444b59; }
+.mPaginate .first:after { margin:6px 1px 0 -11px; }
+.mPaginate .last:after { margin:6px 0 0 5px; }

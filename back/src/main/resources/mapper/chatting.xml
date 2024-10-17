@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.ChattingMapper">
+	<insert id="addChat" parameterType="com.sist.back.vo.ChattingVO" useGeneratedKeys="true" keyProperty="chattingkey">
+		INSERT INTO chatting(chatroomkey, chattingimgkey, chattingemojikey, hope_lati, hope_long, hope_place, hope_time, content, userkey1, userkey2, isbuyerread, issellerread, create_dtm, isdeleted)
+		VALUES(#{chatroomkey},
+		<choose>
+			<when test="chattingimg_url != null">
+				(SELECT COALESCE(MAX(chattingimgkey) + 1, 1) FROM chatimg)
+			</when>
+			<otherwise>
+				NULL
+			</otherwise>
+		</choose>
+		, #{chattingemojikey}, #{hope_lati}, #{hope_long}, #{hope_place}, #{hope_time}, #{content}, #{userkey1}, #{userkey2}, 1, 1, now(), 0)
+	</insert>
+	
+	<insert id="addImg" parameterType="com.sist.back.vo.ChattingVO">
+		INSERT INTO chatimg(chattingkey, chattingimg_url) VALUES(#{chattingkey}, #{chattingimg_url})
+	</insert>
+	<select id="findChatRoom" parameterType="Map" resultType="com.sist.back.vo.ChattingVO">
+		SELECT a.*, b.img_url, c.chattingimg_url
+		FROM chatting a
+		LEFT JOIN chattingemoji b ON a.chattingemojikey = b.chattingemojikey
+		LEFT JOIN chatimg c ON a.chattingimgkey = c.chattingimgkey
+		WHERE a.chatroomkey = #{chatroomkey} order by create_dtm ASC
+	</select>
+	<select id="getEmoticon" parameterType="Map" resultType="com.sist.back.vo.ChattingEmojiVO">
+		SELECT x.*
+		FROM (
+		SELECT *, ROW_NUMBER() OVER (ORDER BY chattingemojikey ASC) rnum
+		FROM chattingemoji
+		) x
+		WHERE x.rnum BETWEEN #{begin} AND #{end}
+	</select>
+
+	<select id="getCountEmoticon" resultType="String">
+		SELECT COUNT(*) FROM chattingemoji
+	</select>
+
+	<select id="getAllEmoticon">
+		SELECT * FROM chattingemoji
+	</select>
+
+	<delete id="deleteEmoticon" parameterType="String">
+		DELETE FROM chattingemoji WHERE chattingemojikey = #{chattingemojikey}
+	</delete>
+
+	<insert id="addEmoticon" parameterType="com.sist.back.vo.ChattingEmojiVO">
+		INSERT INTO chattingemoji(img_url) VALUES (#{img_url})
+	</insert>
+	<update id="isRead" parameterType="String">
+		UPDATE chatting SET issellerread = 0 WHERE userkey2 = #{userkey} AND chatroomkey = #{chatroomkey}
+	</update>
+
+</mapper>

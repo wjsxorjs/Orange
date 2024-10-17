@@ -1,0 +1,208 @@
+.detailInfoBody{
+    width: 100%;
+    min-width: 500px;
+}
+
+.detailInfoTitle{
+    display: inline-block;
+    font-size: 30px;
+    margin: 15px;
+}
+
+.detailInfos{
+    /* padding: 20px; */
+    margin: 0 auto;
+    /* width: 90%; */
+    background-color: #fdfdfd;
+    /* border: 5px solid #f0f0f0; */
+    /* border-radius: 10px; */
+}
+
+.detailInfoItem{
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #dddddd;
+    border-radius: 10px;
+}
+
+.detailInfoPost{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detailInfoPostDesc{
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.detailInfoPostDescImg img{
+    width: 100px;
+    border: 5px ridge #ffffff;
+}
+
+.detailInfoPostDescTxt{
+    width: 100%;
+    padding: 10px;
+}
+
+.detailInfoPostDescTxt .title{
+    font-size: 20px;
+}
+.detailInfoPostDescTxt .category{
+    font-size: 14px;
+    font-weight: bold;
+}
+.detailInfoPostDescTxt .hope_place{
+    font-size: 12px;
+}
+
+.detailInfoPostDescTxt p{
+    margin: 5px 0;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.detailInfoPostEtc{
+    width: 30%;
+    padding: 10px;
+    text-align: right;
+}
+
+.detailInfoPostEtc .method{
+    margin: 10px 0;
+    padding: 5px 0;
+    font-size: 25px;
+    font-weight: lighter;
+}
+
+.detailInfoPostEtc .price{
+    margin: 10px 0;
+    padding: 10px 0;
+    font-size: 25px;
+    font-weight: bolder;
+    color: #fe6e9f;
+}
+
+.detailInfoPostEtc p{
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.detailInfoTransaction{
+    padding: 20px;
+}
+
+.transactionFinal{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px;
+}
+
+.transactionFinal .transactionDesc{
+    font-weight: bold;
+}
+
+.transactionPrice .lastprice{
+    color: #00aa00;
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.transactionPrice .dtm{
+    color: #2d2dff;
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.transactionPrice .price{
+    color: #fe6e9f;
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.transactionLists{
+    margin-top: 20px;
+    border: 3px solid #555555;
+}
+
+.transactionListItem{
+    border: 3px solid #555555;
+}
+
+.title{
+    font-size: 20px;
+}
+
+.detailInfoSeller{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.SellerProfile{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.SellerReview{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.reviewRight{
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.userreviewtxt{
+    padding: 5px;
+}
+
+
+.reviewDowner{
+    margin-top: 20px;
+}
+
+.reviewTitle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.reviewDtm{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.dtmDesc{
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.dtmVal{
+    margin-left: 10px;
+}
+
+.MODAL .MuiPaper-root{
+    width: 80%;
+    min-width: 700px;
+    max-width: 1000px;
+    padding: 20px;
+    margin: 0 auto;
+    width: 90%;
+    background-color: #fdfdfd;
+    border: 5px solid #f0f0f0;
+    border-radius: 10px;
+}

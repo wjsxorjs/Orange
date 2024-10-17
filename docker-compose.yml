@@ -1,0 +1,75 @@
+services:
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: back
+    networks:
+      - my-net1
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://52.78.168.131:3306/market?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=1111
+    restart: always
+    depends_on:
+      - redis
+
+  front:
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - my-net1
+
+  nginx:
+    image: nginx:latest
+    networks:
+      - my-net1
+    restart: always
+    volumes:
+      - ./conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/certificates:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/log:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - certbot
+      - back
+      - front
+  #certbot 추가
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/certificates:/etc/letsencrypt
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet --nginx; sleep 12h; done'"
+    networks:
+      - my-net1
+  redis:  # Redis 서비스 추가
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - my-net1  # Redis도 같은 네트워크에 추가
+  certbot-init:
+    image: certbot/certbot
+    container_name: certbot-init
+    volumes:
+      - ./nginx/certificates:/etc/letsencrypt
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/usr/share/nginx/html   #ㄴㄴ 여기에 html 경로 추가
+    entrypoint: "/bin/sh -c 'certbot certonly --webroot -w /usr/share/nginx/html -d orange-market.store -d www.orange-market.store --email pminh98@naver.com --non-interactive --agree-tos; exit 0'"
+    networks:
+      - my-net1
+networks:
+  my-net1:
+    driver: bridge

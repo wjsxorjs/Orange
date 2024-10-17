@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.back.mapper.CategoryEditMapper">
+	<select id="deletedAll" resultType="com.sist.back.vo.categoryVO">
+		SELECT * FROM category where isdeleted = 1
+	</select>
+	<insert id="addCategory" parameterType="com.sist.back.vo.categoryVO">
+		INSERT INTO category(categoryname, img_url, create_dtm, update_dtm, isdeleted)
+		VALUES(#{categoryname}, #{img_url}, now(), now(), 0)
+	</insert>
+	<insert id="addCategoryDefault" parameterType="com.sist.back.vo.categoryVO">
+		INSERT INTO category(categoryname, img_url, create_dtm, update_dtm, isdeleted)
+		VALUES(#{categoryname}, "/img/admin/category/add_image.png", now(), now(), 0)
+	</insert>
+	<select id="getCategory" parameterType="String" resultType="com.sist.back.vo.categoryVO">
+		select * from category where categorykey = #{categorykey}
+	</select>
+	<update id="editCategory" parameterType="com.sist.back.vo.categoryVO">
+		UPDATE category SET categoryname = #{categoryname}, img_url = #{img_url}, update_dtm = NOW() WHERE categorykey = #{categorykey}
+	</update>
+	<update id="editCategoryDefault" parameterType="com.sist.back.vo.categoryVO">
+		UPDATE category SET categoryname = #{categoryname}, update_dtm = NOW() WHERE categorykey = #{categorykey}
+	</update>
+	<delete id="deleteCategory" parameterType="String">
+		UPDATE category SET isdeleted = 1, delete_dtm = now() WHERE categorykey = #{categorykey}
+	</delete>
+	<select id="getPostCount">
+		SELECT categorykey, COUNT(postkey) AS post_count
+		FROM post
+		GROUP BY categorykey
+		order by categorykey ASC
+	</select>
+</mapper>
